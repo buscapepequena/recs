@@ -3,28 +3,33 @@
 import Image from "next/image";
 import { KeyboardEvent, useEffect, useState } from "react";
 import SitioHeadline from "@/modules/SitioHeadline";
+import GpuNote from "@/modules/GpuNote";
 import { SITIO_COPY, SITIO_COPY_BOX, SITIO_RATIO, SITIO_SHIFT } from "@/hooks/sitioImages";
-import { BASE_SIZE, SITIO_HEADLINES } from "@/hooks/sitioHeadlines";
+import { BASE_SIZE } from "@/hooks/sitioHeadlines";
 import { useFitText } from "@/hooks/useFitText";
 import { SitioBlockProps } from "@/types/parallax.types";
 
 const AUTO_MS = 10000;
 const ACCENT = "#E9672B";
-const COPY_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
-const GPU_COLOR = "#d8caff";
+const COPY_FONT = "var(--font-helvetica-face)";
+const GPU_SIZE = 2.55;
+const GPU_MOBILE_SIZE = 4.6;
+const GPU_CENTER = 93.49;
+const GPU_WIDTH = 13.02;
 
-export default function SitioBlock({ images }: SitioBlockProps) {
+export default function SitioBlock({ images, text }: SitioBlockProps) {
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(true);
-  const copyRefs = useFitText(SITIO_COPY.length);
+  const total = text.headlines.length;
+  const copyRefs = useFitText(SITIO_COPY.length, text.copy.join("|"));
 
   useEffect(() => {
     if (!auto) return;
     const timer = setInterval(() => {
-      setActive((current) => (current + 1) % SITIO_HEADLINES.length);
+      setActive((current) => (current + 1) % total);
     }, AUTO_MS);
     return () => clearInterval(timer);
-  }, [auto]);
+  }, [auto, total]);
 
   const select = (option: number) => {
     setAuto(false);
@@ -48,7 +53,12 @@ export default function SitioBlock({ images }: SitioBlockProps) {
         className="hidden md:flex relative flex-col w-full max-w-[1100px]"
         style={{ aspectRatio: SITIO_RATIO, containerType: "inline-size" }}
       >
-        <SitioHeadline active={active} size={BASE_SIZE} className="absolute left-0 top-[1.19%] w-full" />
+        <SitioHeadline
+          lines={text.headlines[active]}
+          active={active}
+          size={BASE_SIZE}
+          className="absolute left-0 top-[1.19%] w-full"
+        />
         <div
           className="flex absolute top-0 w-full h-full"
           style={{ left: `${-SITIO_SHIFT}%` }}
@@ -76,7 +86,7 @@ export default function SitioBlock({ images }: SitioBlockProps) {
               >
                 <Image
                   src={image.src}
-                  alt={image.alt}
+                  alt={text.images[image.key]}
                   fill
                   unoptimized
                   sizes="(min-width: 1100px) 1100px, 100vw"
@@ -118,18 +128,16 @@ export default function SitioBlock({ images }: SitioBlockProps) {
                   hyphens: "auto",
                 }}
               >
-                {copy.text}
+                {text.copy[copy.option]}
               </p>
             </div>
           ))}
-          <div
-            className="flex absolute left-[93.49%] top-[92.81%] -translate-x-1/2 flex-col items-center text-center whitespace-nowrap font-industria"
-            style={{ fontSize: "2.55cqw", lineHeight: "2.55cqw", color: GPU_COLOR }}
-          >
-            <span>Keep your gpus</span>
-            <span>in tip top</span>
-            <span>computing condition.</span>
-          </div>
+          <GpuNote
+            lines={text.gpu}
+            size={GPU_SIZE}
+            className="absolute top-[92.81%]"
+            style={{ left: `${GPU_CENTER - GPU_WIDTH / 2}%`, width: `${GPU_WIDTH}%` }}
+          />
         </div>
       </div>
 
@@ -137,7 +145,12 @@ export default function SitioBlock({ images }: SitioBlockProps) {
         className="flex md:hidden relative flex-col items-center w-full"
         style={{ containerType: "inline-size" }}
       >
-        <SitioHeadline active={active} size={8.6} className="relative w-full" />
+        <SitioHeadline
+          lines={text.headlines[active]}
+          active={active}
+          size={8.6}
+          className="relative w-full"
+        />
         {backdrop && (
           <div
             className="flex relative w-full mt-[7cqw]"
@@ -145,7 +158,7 @@ export default function SitioBlock({ images }: SitioBlockProps) {
           >
             <Image
               src={backdrop.src}
-              alt={backdrop.alt}
+              alt={text.images[backdrop.key]}
               fill
               unoptimized
               sizes="100vw"
@@ -157,7 +170,6 @@ export default function SitioBlock({ images }: SitioBlockProps) {
         <div className="flex relative flex-col w-full gap-3 mt-4">
           {options.map((image) => {
             const option = image.option as number;
-            const copy = SITIO_COPY.find((item) => item.option === option);
             const selected = option === active;
             return (
               <div
@@ -179,7 +191,7 @@ export default function SitioBlock({ images }: SitioBlockProps) {
                 >
                   <Image
                     src={image.src}
-                    alt={image.alt}
+                    alt={text.images[image.key]}
                     fill
                     unoptimized
                     sizes="40vw"
@@ -200,7 +212,7 @@ export default function SitioBlock({ images }: SitioBlockProps) {
                     hyphens: "auto",
                   }}
                 >
-                  {copy?.text}
+                  {text.copy[option]}
                 </p>
               </div>
             );
@@ -213,7 +225,7 @@ export default function SitioBlock({ images }: SitioBlockProps) {
           >
             <Image
               src={equipment.src}
-              alt={equipment.alt}
+              alt={text.images[equipment.key]}
               fill
               unoptimized
               sizes="90vw"
@@ -222,14 +234,12 @@ export default function SitioBlock({ images }: SitioBlockProps) {
             />
           </div>
         )}
-        <div
-          className="flex relative flex-col items-center self-end mt-3 text-center whitespace-nowrap font-industria"
-          style={{ fontSize: "4.6cqw", lineHeight: "4.6cqw", color: GPU_COLOR }}
-        >
-          <span>Keep your gpus</span>
-          <span>in tip top</span>
-          <span>computing condition.</span>
-        </div>
+        <GpuNote
+          lines={text.gpu}
+          size={GPU_MOBILE_SIZE}
+          className="relative self-end mt-3"
+          style={{ width: `${(GPU_WIDTH * GPU_MOBILE_SIZE) / GPU_SIZE}%` }}
+        />
       </div>
     </>
   );

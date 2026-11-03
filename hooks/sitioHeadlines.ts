@@ -1,11 +1,20 @@
-import { HeadlineLine } from "@/types/parallax.types";
+import { HeadlineLine, HeadlineSegment } from "@/types/parallax.types";
 
-const TIGHT = 40.45;
-const LOOSE = 42.14;
+export const TIGHT = 40.45;
+export const LOOSE = 42.14;
 
 export const BASE_SIZE = 7.26;
 
-export const LEADING_TO_CQW = 6.05 / TIGHT;
+export const LEADING_TO_EM = 6.05 / TIGHT / BASE_SIZE;
+
+export const light = (text: string): HeadlineSegment => ({ text, weight: "light" });
+export const medium = (text: string): HeadlineSegment => ({ text, weight: "medium" });
+export const bold = (text: string): HeadlineSegment => ({ text, weight: "bold" });
+export const mark = (text: string): HeadlineSegment => ({ text, weight: "medium", highlight: true });
+export const line = (leading: number, ...segments: HeadlineSegment[]): HeadlineLine => ({
+  leading,
+  segments,
+});
 
 export const SITIO_HEADLINES: HeadlineLine[][] = [
   [

@@ -11,6 +11,15 @@ export const souvenir = localFont({
   fallback: ["Georgia", "serif"],
 });
 
+export const helvetica = localFont({
+  src: "../public/fonts/helvetica-bold.woff2",
+  weight: "700",
+  style: "normal",
+  variable: "--font-helvetica-face",
+  display: "block",
+  fallback: ["Helvetica Neue", "Arial", "sans-serif"],
+});
+
 export const industria = localFont({
   src: "../public/fonts/Industria Solid.otf",
   weight: "400",

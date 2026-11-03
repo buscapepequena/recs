@@ -12,6 +12,7 @@
   --font-mono: var(--font-geist-mono);
   --font-souvenir: var(--font-souvenir-face);
   --font-industria: var(--font-industria-face);
+  --font-helvetica: var(--font-helvetica-face);
 }
 
 @media (prefers-color-scheme: dark) {

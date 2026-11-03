@@ -8,8 +8,9 @@ export const SKY_TOP =
   "linear-gradient(to right, #8571b5 0%, #c98bc3 25%, #9b80cb 50%, #bd8ecf 75%, #e99cce 100%)";
 
 export const LAYERS: ParallaxLayer[] = [
-  { src: "/images/00.png", alt: "Cielo", depth: 0.05 },
+  { key: "sky", src: "/images/00.png", alt: "Cielo", depth: 0.05 },
   {
+    key: "suns",
     src: "/images/01.png",
     alt: "Soles",
     depth: 0.09,
@@ -22,9 +23,9 @@ export const LAYERS: ParallaxLayer[] = [
       origin: "81% 22%",
     },
   },
-    { src: "/images/recompswaps.png", alt: "Recomp Swaps", depth: 0.07 },
-
+  { key: "logo", src: "/images/recompswaps.png", alt: "Recomp Swaps", depth: 0.07 },
   {
+    key: "ship",
     src: "/images/02.png",
     alt: "Nave",
     depth: 0.14,
@@ -36,16 +37,18 @@ export const LAYERS: ParallaxLayer[] = [
       origin: "73% 11%",
     },
   },
-  { src: "/images/03.png", alt: "Ciudad lejana", depth: 0.22 },
-  { src: "/images/04.png", alt: "Nubes bajas", depth: 0.34 },
+  { key: "farCity", src: "/images/03.png", alt: "Ciudad lejana", depth: 0.22 },
+  { key: "lowClouds", src: "/images/04.png", alt: "Nubes bajas", depth: 0.34 },
   {
+    key: "bridge",
     src: "/images/05.png",
     alt: "Puente plano medio",
     depth: 0.48,
     offset: 0.06,
   },
-  { src: "/images/06.png", alt: "Plano medio", depth: 0.68, offset: 0.12 },
+  { key: "midground", src: "/images/06.png", alt: "Plano medio", depth: 0.68, offset: 0.12 },
   {
+    key: "foreground",
     src: "/images/07.png",
     alt: "Nubes primer plano",
     depth: 1,

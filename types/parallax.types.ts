@@ -1,4 +1,5 @@
-import type { RefObject } from "react";
+import type { CSSProperties, RefObject } from "react";
+import type { Dictionary, LayerKey, Locale, SitioImageKey } from "@/types/i18n.types";
 
 export interface ParallaxDrift {
   x: number;
@@ -11,6 +12,7 @@ export interface ParallaxDrift {
 }
 
 export interface ParallaxLayer {
+  key: LayerKey;
   src: string;
   alt: string;
   depth: number;
@@ -21,15 +23,26 @@ export interface ParallaxLayer {
 
 export interface CornerMarkProps {
   src: string;
+  label: string;
+  current: Locale;
+  languageLabel: string;
 }
 
 export interface GpuSectionProps {
   src: string;
+  alt: string;
+  id: string;
+}
+
+export interface PrivacyMarkProps {
+  src: string;
+  alt: string;
+  targetId: string;
 }
 
 export interface SitioImage {
+  key: SitioImageKey;
   src: string;
-  alt: string;
   left: number;
   top: number;
   width: number;
@@ -41,7 +54,6 @@ export interface SitioImage {
 export interface SitioCopy {
   option: number;
   top: number;
-  text: string;
 }
 
 export interface HeadlineSegment {
@@ -56,13 +68,27 @@ export interface HeadlineLine {
 }
 
 export interface SitioHeadlineProps {
+  lines: HeadlineLine[];
   active: number;
   size: number;
   className?: string;
 }
 
+export interface GpuNoteProps {
+  lines: string[];
+  size: number;
+  className?: string;
+  style?: CSSProperties;
+}
+
 export interface SitioBlockProps {
   images: SitioImage[];
+  text: Dictionary["sitio"];
+}
+
+export interface MiddleSectionProps {
+  text: Dictionary["sitio"];
+  issue: Dictionary["issue"];
 }
 
 export interface CityParallaxProps {

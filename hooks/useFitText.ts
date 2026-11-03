@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 const LEADING = 1.18;
 
-export function useFitText(count: number) {
+export function useFitText(count: number, signature: string) {
   const textRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function useFitText(count: number) {
     const observer = new ResizeObserver(fit);
     textRefs.current.forEach((text) => text?.parentElement && observer.observe(text.parentElement));
     return () => observer.disconnect();
-  }, [count]);
+  }, [count, signature]);
 
   return textRefs;
 }

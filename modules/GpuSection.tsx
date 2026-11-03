@@ -4,9 +4,10 @@ import { GpuSectionProps } from "@/types/parallax.types";
 
 const FADE = "linear-gradient(to bottom, transparent 0%, black 5%, black 100%)";
 
-export default function GpuSection({ src }: GpuSectionProps) {
+export default function GpuSection({ src, alt, id }: GpuSectionProps) {
   return (
     <div
+      id={id}
       className="flex relative flex-col w-full -mt-px"
       style={{ backgroundColor: POSTER_TOP }}
     >
@@ -16,7 +17,7 @@ export default function GpuSection({ src }: GpuSectionProps) {
       >
         <Image
           src={src}
-          alt="Recomputational swaps. Recomprable swaps. Recompetitive swaps. RTX 6000"
+          alt={alt}
           fill
           unoptimized
           sizes="100vw"
