@@ -339,14 +339,22 @@ export function useMarketStore(identity: IdentityStore): MarketStore {
         if (REMOTE && myPubkey) {
           const secret = generateSecretKey();
           const signOnce = (template: EventTemplate) => finalizeEvent(template, secret);
-          for (const photo of listing.photos) await uploadToBlossom(photo, signOnce);
+          const adopted: string[] = [];
+          for (const photo of listing.photos) {
+            try {
+              await uploadToBlossom(photo, signOnce);
+              adopted.push(photo);
+            } catch (cause) {
+              console.log("market: photo kept with seller", cause);
+            }
+          }
           const archived = signOnce(listingTemplate(copy, randomId(), Math.floor(day / 1000)));
           await publish(archived);
           keep(archived);
           const removal = identity.sign(deleteTemplate(listing, myPubkey));
           if (removal) await publish(removal);
           drop(id);
-          for (const photo of listing.photos) {
+          for (const photo of adopted) {
             try {
               await deleteFromBlossom(photo, identity.sign);
             } catch (cause) {

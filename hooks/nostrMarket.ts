@@ -25,6 +25,8 @@ import { CONTACT_METHODS } from "@/hooks/modCatalog";
 
 const DAY = 24 * 60 * 60;
 
+const MAX_UPLOAD_BYTES = 1048576;
+
 let pool: SimplePool | null = null;
 
 export const getPool = () => {
@@ -54,6 +56,7 @@ export async function uploadToBlossom(
 ): Promise<string> {
   const blob = await (await fetch(dataUrl)).blob();
   const bytes = new Uint8Array(await blob.arrayBuffer());
+  if (bytes.length > MAX_UPLOAD_BYTES) throw new Error("photo too large");
   const hash = toHex(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)));
   const auth = sign({
     kind: BLOSSOM_AUTH_KIND,
