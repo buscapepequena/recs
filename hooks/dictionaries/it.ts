@@ -31,14 +31,14 @@ const it: Dictionary = {
         line(TIGHT, light("Non ci importa")),
         line(TIGHT, light("quale "), mark("mod"), light(" vuoi.")),
         line(TIGHT),
-        line(LOOSE, medium("Ti"), light(" aiutiamo")),
+        line(LOOSE, light("Aiutiamo "), medium("te")),
         line(LOOSE, light("a trarne il "), bold("massimo"), light(".")),
       ],
       [
         line(TIGHT, light("Installazione esperta")),
-        line(TIGHT, light("per chi compra "), mark("per la prima volta"), light(".")),
+        line(TIGHT, light("per "), mark("nuovi"), light(" acquirenti.")),
         line(TIGHT),
-        line(LOOSE, light("E per i "), bold("professionisti"), light("!")),
+        line(LOOSE, light("E per i "), bold("pro"), light("!")),
         line(LOOSE, light("Supershow multimediale.")),
       ],
       [
@@ -46,7 +46,7 @@ const it: Dictionary = {
         line(TIGHT),
         line(TIGHT, light("È "), mark("quanto"), light(" ottieni.")),
         line(LOOSE),
-        line(LOOSE, light("Facciamo "), bold("scambio"), light("?")),
+        line(LOOSE, bold("Scambiamo"), light("?")),
       ],
     ],
     copy: [

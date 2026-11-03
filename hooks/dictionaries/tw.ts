@@ -29,22 +29,22 @@ const tw: Dictionary = {
     headlines: [
       [
         line(TIGHT, light("Ɛnyɛ yɛn asɛm")),
-        line(TIGHT, mark("mod"), light(" biara a wopɛ.")),
+        line(TIGHT, light("sɛ "), mark("mod"), light(" bɛn na wopɛ.")),
         line(TIGHT),
         line(LOOSE, light("Yɛbɛboa "), medium("wo")),
-        line(LOOSE, light("ama woanya mu "), bold("mfasoɔ kɛseɛ"), light(".")),
+        line(LOOSE, light("ma wonya mu "), bold("mfasoɔ"), light(" pii.")),
       ],
       [
         line(TIGHT, light("Abenfoɔ nsisie")),
-        line(TIGHT, light("ma "), mark("wɔn a wɔretɔ no kan"), light(".")),
+        line(TIGHT, light("ma adetɔfoɔ "), mark("foforɔ"), light(".")),
         line(TIGHT),
-        line(LOOSE, light("Ne "), bold("abenfoɔ"), light(" nso!")),
-        line(LOOSE, light("Multimedia agoprama kɛseɛ.")),
+        line(LOOSE, bold("Abenfoɔ"), light(" nso!")),
+        line(LOOSE, light("Multimedia agoprama.")),
       ],
       [
         line(TIGHT, light("Ɛnyɛ sɛ ne boɔ yɛ fo.")),
         line(TIGHT),
-        line(TIGHT, light("Ɛyɛ "), mark("sɛnea wonya"), light(" pii.")),
+        line(TIGHT, light("Ɛyɛ "), mark("dodoɔ"), light(" a wonya.")),
         line(LOOSE),
         line(LOOSE, bold("Yɛnsesa"), light(" anaa?")),
       ],

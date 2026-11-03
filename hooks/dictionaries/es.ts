@@ -31,14 +31,14 @@ const es: Dictionary = {
         line(TIGHT, light("Nos da igual")),
         line(TIGHT, light("qué "), mark("mod"), light(" quieras.")),
         line(TIGHT),
-        line(LOOSE, medium("Te"), light(" ayudamos")),
-        line(LOOSE, light("a sacarle el "), bold("máximo"), light(" partido.")),
+        line(LOOSE, light("Te ayudamos "), medium("a ti")),
+        line(LOOSE, light("a sacarle el "), bold("máximo"), light(".")),
       ],
       [
         line(TIGHT, light("Instalación experta")),
-        line(TIGHT, light("para "), mark("compradores primerizos"), light(".")),
+        line(TIGHT, light("para "), mark("nuevos"), light(" compradores.")),
         line(TIGHT),
-        line(LOOSE, light("¡Y "), bold("profesionales"), light("!")),
+        line(LOOSE, light("¡Y "), bold("expertos"), light("!")),
         line(LOOSE, light("Supershow multimedia.")),
       ],
       [

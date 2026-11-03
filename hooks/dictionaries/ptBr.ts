@@ -28,17 +28,17 @@ const ptBr: Dictionary = {
     },
     headlines: [
       [
-        line(TIGHT, light("Tanto faz pra gente")),
+        line(TIGHT, light("Não nos importa")),
         line(TIGHT, light("qual "), mark("mod"), light(" você quer.")),
         line(TIGHT),
-        line(LOOSE, light("A gente ajuda "), medium("você")),
+        line(LOOSE, light("Ajudamos "), medium("você")),
         line(LOOSE, light("a tirar o "), bold("máximo"), light(" dele.")),
       ],
       [
-        line(TIGHT, light("Instalação especializada")),
-        line(TIGHT, light("para "), mark("compradores de primeira viagem"), light(".")),
+        line(TIGHT, light("Instalação experta")),
+        line(TIGHT, light("para "), mark("novos"), light(" compradores.")),
         line(TIGHT),
-        line(LOOSE, light("E para "), bold("profissionais"), light("!")),
+        line(LOOSE, light("E "), bold("feras"), light("!")),
         line(LOOSE, light("Supershow multimídia.")),
       ],
       [
@@ -46,7 +46,7 @@ const ptBr: Dictionary = {
         line(TIGHT),
         line(TIGHT, light("É "), mark("o quanto"), light(" você leva.")),
         line(LOOSE),
-        line(LOOSE, light("Vamos "), bold("trocar"), light("?")),
+        line(LOOSE, light("Bora "), bold("trocar"), light("?")),
       ],
     ],
     copy: [
