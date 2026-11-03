@@ -6,7 +6,7 @@ import MarketBack from "@/modules/market/MarketBack";
 import PriceBurst from "@/modules/market/PriceBurst";
 import ListingStatusMark from "@/modules/market/ListingStatusMark";
 import { LISTING_DAYS } from "@/hooks/marketListings";
-import { fill, formatDate, formatPrice } from "@/hooks/marketFormat";
+import { fill, formatDate, formatPrice, listingLocation } from "@/hooks/marketFormat";
 import { HARD_SHADOW, HELVETICA, MARKET_COLORS } from "@/hooks/marketTheme";
 import { MarketDetailProps } from "@/types/market.types";
 
@@ -15,6 +15,30 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
   const [photo, setPhoto] = useState(0);
   const [note, setNote] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [confirmFreeze, setConfirmFreeze] = useState(false);
+  const [soldOpen, setSoldOpen] = useState(false);
+  const [confirmWipe, setConfirmWipe] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyHandle = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch (cause) {
+      console.log("market: copy failed", cause);
+    }
+  };
+
+  const run = async (action: () => Promise<boolean>) => {
+    setBusy(true);
+    setFailed(false);
+    const ok = await action();
+    setBusy(false);
+    if (!ok) setFailed(true);
+  };
 
   if (!listing) {
     return (
@@ -36,22 +60,24 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
   const rows: [string, string][] = [
     [text.details.condition, text.conditions[listing.condition]],
     [text.details.category, text.categories[listing.category]],
-    [text.details.location, listing.location],
+    [text.details.location, listingLocation(listing, text)],
     [text.details.posted, age === 0 ? text.today : fill(text.postedAgo, age)],
     [
       text.details.expires,
-      status === "sold"
-        ? text.status.sold
+      listing.archived
+        ? text.archived
         : expired
           ? text.expired
-          : status === "pending"
-          ? text.status.pending
-          : left <= 1
-            ? text.lastDay
-            : fill(text.daysLeft, left),
+          : status === "sold"
+            ? text.status.sold
+            : status === "pending"
+              ? text.status.pending
+              : left <= 1
+                ? text.lastDay
+                : fill(text.daysLeft, left),
     ],
-    [text.details.seller, listing.mine ? text.you : `@${listing.seller}`],
-  ];
+    [text.details.seller, listing.mine ? text.you : listing.seller || text.anonymous],
+  ].filter(([, value]) => Boolean(value)) as [string, string][];
   const extra: [string, string | undefined][] = [
     [text.details.make, listing.attributes?.make],
     [text.details.model, listing.attributes?.model],
@@ -127,8 +153,16 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
             />
           </div>
 
-          {(listing.mine || listing.options?.obo) && (
+          {(listing.mine || listing.options?.obo || listing.archived) && (
             <div className="flex relative flex-row flex-wrap gap-[0.5em]">
+              {listing.archived && (
+                <span
+                  className="flex relative px-[0.5em] py-[0.15em] font-industria uppercase"
+                  style={{ backgroundColor: MARKET_COLORS.text, color: MARKET_COLORS.cream }}
+                >
+                  {text.archived}
+                </span>
+              )}
               {listing.mine && (
                 <span
                   className="flex relative px-[0.5em] py-[0.15em] font-industria uppercase"
@@ -158,8 +192,9 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
               </span>
               <button
                 type="button"
-                onClick={() => store.republish(listing.id)}
-                className="flex relative px-[0.8em] py-[0.35em] font-industria uppercase cursor-pointer"
+                disabled={busy}
+                onClick={() => run(() => store.republish(listing.id))}
+                className="flex relative px-[0.8em] py-[0.35em] font-industria uppercase cursor-pointer disabled:opacity-60 disabled:cursor-wait"
                 style={{ backgroundColor: MARKET_COLORS.orange, color: "#fff" }}
               >
                 {text.republish}
@@ -233,7 +268,8 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
             {!listing.mine && status !== "sold" && (
               <button
                 type="button"
-                onClick={() => setNote(true)}
+                onClick={() => setNote((open) => !open)}
+                aria-expanded={note}
                 className="flex relative px-[0.9em] py-[0.5em] font-industria uppercase cursor-pointer transition-transform duration-150 hover:-translate-y-[0.1em]"
                 style={{
                   backgroundColor: MARKET_COLORS.orange,
@@ -254,12 +290,25 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
                 {text.moreBySeller} ({sellerAds})
               </button>
             )}
+            {listing.mine && status !== "sold" && (
+              <button
+                type="button"
+                disabled={busy}
+                aria-expanded={soldOpen}
+                onClick={() => setSoldOpen((open) => !open)}
+                className="flex relative px-[0.9em] py-[0.5em] font-industria uppercase cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+                style={{ backgroundColor: MARKET_COLORS.text, color: MARKET_COLORS.cream }}
+              >
+                {text.markSold}
+              </button>
+            )}
             {listing.mine && (
               <button
                 type="button"
-                onClick={() => (confirming ? store.remove(listing.id) : setConfirming(true))}
+                disabled={busy}
+                onClick={() => (confirming ? run(() => store.remove(listing.id)) : setConfirming(true))}
                 onBlur={() => setConfirming(false)}
-                className="flex relative px-[0.9em] py-[0.5em] font-industria uppercase cursor-pointer"
+                className="flex relative px-[0.9em] py-[0.5em] font-industria uppercase cursor-pointer disabled:opacity-60 disabled:cursor-wait"
                 style={{
                   border: `0.14em solid ${MARKET_COLORS.red}`,
                   backgroundColor: confirming ? MARKET_COLORS.red : "transparent",
@@ -271,19 +320,100 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
             )}
           </div>
 
-          {note && (
-            <p
-              role="status"
-              className="flex relative px-[0.7em] py-[0.5em]"
-              style={{
-                fontFamily: HELVETICA,
-                fontWeight: 700,
-                backgroundColor: MARKET_COLORS.yellow,
-                color: MARKET_COLORS.purple,
-              }}
+          {listing.mine && (soldOpen || status === "sold") && (
+            <div
+              className="flex relative flex-col gap-[0.8em] p-[0.8em]"
+              style={{ border: `0.14em dashed ${MARKET_COLORS.text}` }}
             >
-              {text.messagesSoon}
+              <span className="flex relative font-industria uppercase" style={{ color: MARKET_COLORS.text }}>
+                {text.soldChoice}
+              </span>
+              <div className="flex relative flex-col gap-[0.4em]">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => (confirmFreeze ? run(() => store.freeze(listing.id)) : setConfirmFreeze(true))}
+                  onBlur={() => setConfirmFreeze(false)}
+                  className="flex relative self-start px-[0.9em] py-[0.5em] font-industria uppercase cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+                  style={{
+                    backgroundColor: confirmFreeze ? MARKET_COLORS.orange : MARKET_COLORS.cream,
+                    color: confirmFreeze ? "#fff" : MARKET_COLORS.text,
+                    border: `0.14em solid ${confirmFreeze ? MARKET_COLORS.orange : MARKET_COLORS.text}`,
+                  }}
+                >
+                  {confirmFreeze ? text.freezeConfirm : text.freeze}
+                </button>
+                <p className="flex relative leading-[1.35]" style={{ fontFamily: HELVETICA, fontWeight: 700, color: MARKET_COLORS.muted, fontSize: "0.9em" }}>
+                  {text.freezeHint}
+                </p>
+              </div>
+              <div className="flex relative flex-col gap-[0.4em]">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => (confirmWipe ? run(() => store.remove(listing.id)) : setConfirmWipe(true))}
+                  onBlur={() => setConfirmWipe(false)}
+                  className="flex relative self-start px-[0.9em] py-[0.5em] font-industria uppercase cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+                  style={{
+                    backgroundColor: confirmWipe ? MARKET_COLORS.red : MARKET_COLORS.cream,
+                    color: confirmWipe ? "#fff" : MARKET_COLORS.red,
+                    border: `0.14em solid ${MARKET_COLORS.red}`,
+                  }}
+                >
+                  {confirmWipe ? text.soldDeleteConfirm : text.soldDelete}
+                </button>
+                <p className="flex relative leading-[1.35]" style={{ fontFamily: HELVETICA, fontWeight: 700, color: MARKET_COLORS.muted, fontSize: "0.9em" }}>
+                  {text.soldDeleteHint}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {busy && (
+            <p role="status" className="flex relative font-industria uppercase" style={{ color: MARKET_COLORS.orange }}>
+              {text.publishing}
             </p>
+          )}
+          {failed && (
+            <p role="alert" className="flex relative px-[0.7em] py-[0.4em]" style={{ fontFamily: HELVETICA, fontWeight: 700, color: "#fff", backgroundColor: MARKET_COLORS.red }}>
+              {text.publishFailed}
+            </p>
+          )}
+
+          {note && !listing.mine && status !== "sold" && (
+            <div
+              role="status"
+              className="flex relative flex-col gap-[0.45em] px-[0.8em] py-[0.6em]"
+              style={{ backgroundColor: MARKET_COLORS.yellow, color: MARKET_COLORS.purple, boxShadow: HARD_SHADOW(MARKET_COLORS.orange) }}
+            >
+              <span className="font-industria uppercase">{text.contactTitle}</span>
+              {listing.contact ? (
+                <div className="flex relative flex-row flex-wrap items-center gap-[0.6em]">
+                  <span
+                    className="flex relative px-[0.5em] py-[0.15em] font-industria uppercase"
+                    style={{ backgroundColor: MARKET_COLORS.purple, color: MARKET_COLORS.cream }}
+                  >
+                    {text.requests.contactMethods[listing.contact.method]}
+                  </span>
+                  <span className="flex relative break-all" style={{ fontFamily: HELVETICA, fontWeight: 700, fontSize: "1.1em" }}>
+                    {listing.contact.handle}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyHandle(listing.contact?.handle ?? "")}
+                    className="flex relative px-[0.7em] py-[0.25em] font-industria uppercase cursor-pointer"
+                    style={{ backgroundColor: MARKET_COLORS.orange, color: "#fff" }}
+                  >
+                    {copied ? text.copied : text.copy}
+                  </button>
+                </div>
+              ) : (
+                <span style={{ fontFamily: HELVETICA, fontWeight: 700 }}>{text.noContact}</span>
+              )}
+              <span style={{ fontFamily: HELVETICA, fontWeight: 700, fontSize: "0.9em", color: MARKET_COLORS.muted }}>
+                {text.contactOffPlatform}
+              </span>
+            </div>
           )}
         </div>
       </div>

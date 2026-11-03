@@ -5,12 +5,14 @@ import { createPortal } from "react-dom";
 import MarketApp from "@/modules/market/MarketApp";
 import MarkText from "@/modules/market/MarkText";
 import { useMarketStore } from "@/hooks/useMarketStore";
+import { useIdentity } from "@/hooks/useIdentity";
 import { useSitioSelection } from "@/hooks/sitioSelection";
 import { MARKET_COLORS, SILVER_SCREEN } from "@/hooks/marketTheme";
 import { MarketScreenProps, MarketTab } from "@/types/market.types";
 
 export default function MarketScreen({ text, htmlLang }: MarketScreenProps) {
-  const store = useMarketStore();
+  const identity = useIdentity();
+  const store = useMarketStore(identity);
   const { manual, select } = useSitioSelection();
   const tab = (manual ?? 2) as MarketTab;
   const [open, setOpen] = useState(false);
@@ -32,6 +34,7 @@ export default function MarketScreen({ text, htmlLang }: MarketScreenProps) {
   const app = (variant: "screen" | "modal") => (
     <MarketApp
       store={store}
+      identity={identity}
       text={text}
       htmlLang={htmlLang}
       tab={tab}

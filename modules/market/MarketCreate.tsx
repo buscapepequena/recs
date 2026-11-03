@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChangeEvent, CSSProperties, FormEvent, useRef, useState } from "react";
 import MarketBack from "@/modules/market/MarketBack";
 import MarkText from "@/modules/market/MarkText";
+import MarketSelect from "@/modules/market/MarketSelect";
 import { compressImage } from "@/hooks/compressImage";
 import {
   MARKET_CATEGORIES,
@@ -12,6 +13,7 @@ import {
   MAX_PHOTOS,
 } from "@/hooks/marketListings";
 import { fill } from "@/hooks/marketFormat";
+import { CONTACT_METHODS } from "@/hooks/modCatalog";
 import { HARD_SHADOW, HELVETICA, MARKET_COLORS } from "@/hooks/marketTheme";
 import {
   MarketCategory,
@@ -20,6 +22,7 @@ import {
   MarketFormErrors,
   MarketViewProps,
 } from "@/types/market.types";
+import { ContactMethod } from "@/types/requests.types";
 
 const FIELD: CSSProperties = {
   fontFamily: HELVETICA,
@@ -38,7 +41,7 @@ const ERROR: CSSProperties = {
   fontSize: "0.9em",
 };
 
-export default function MarketCreate({ store, text }: MarketViewProps) {
+export default function MarketCreate({ store, identity, text }: MarketViewProps) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -48,8 +51,12 @@ export default function MarketCreate({ store, text }: MarketViewProps) {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [method, setMethod] = useState<ContactMethod>("signal");
+  const [handle, setHandle] = useState("");
   const [processing, setProcessing] = useState(false);
   const [errors, setErrors] = useState<MarketFormErrors>({});
+  const [publishing, setPublishing] = useState(false);
+  const [failed, setFailed] = useState(false);
   const form = text.form;
 
   const onFiles = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -69,8 +76,9 @@ export default function MarketCreate({ store, text }: MarketViewProps) {
     setProcessing(false);
   };
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (publishing) return;
     const amount = Number(price.replace(",", "."));
     const next: MarketFormErrors = {};
     if (!title.trim()) next.title = form.required;
@@ -78,9 +86,16 @@ export default function MarketCreate({ store, text }: MarketViewProps) {
     if (!location.trim()) next.location = form.required;
     if (!description.trim()) next.description = form.required;
     if (!photos.length) next.photos = form.needPhoto;
+    if (!handle.trim()) next.contact = form.needContact;
     setErrors(next);
     if (Object.keys(next).length) return;
-    store.add({
+    if (!identity.identity) {
+      store.setView({ name: "identity", next: "create" });
+      return;
+    }
+    setPublishing(true);
+    setFailed(false);
+    const ok = await store.add({
       title: title.trim(),
       price: Math.round(amount * 100) / 100,
       currency,
@@ -89,7 +104,10 @@ export default function MarketCreate({ store, text }: MarketViewProps) {
       location: location.trim(),
       description: description.trim(),
       photos,
+      contact: { method, handle: handle.trim() },
     });
+    setPublishing(false);
+    if (!ok) setFailed(true);
   };
 
   return (
@@ -135,60 +153,45 @@ export default function MarketCreate({ store, text }: MarketViewProps) {
           />
           {errors.price && <span style={ERROR}>{errors.price}</span>}
         </label>
-        <label className="flex relative flex-col gap-[0.3em] w-[30%] @max-sm:w-full">
+        <div className="flex relative flex-col gap-[0.3em] w-[30%] @max-sm:w-full">
           <span className="font-industria uppercase" style={LABEL}>
             {form.currency}
           </span>
-          <select
+          <MarketSelect<MarketCurrency>
             value={currency}
-            onChange={(event) => setCurrency(event.target.value as MarketCurrency)}
-            className="flex relative w-full px-[0.5em] py-[0.5em] outline-none cursor-pointer"
-            style={FIELD}
-          >
-            {MARKET_CURRENCIES.map((code) => (
-              <option key={code} value={code}>
-                {code}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={setCurrency}
+            label={form.currency}
+            options={MARKET_CURRENCIES.map((code) => ({ value: code, label: code }))}
+            className="w-full"
+          />
+        </div>
       </div>
 
       <div className="flex relative flex-row @max-sm:flex-col gap-[0.8em]">
-        <label className="flex relative flex-col gap-[0.3em] flex-1">
+        <div className="flex relative flex-col gap-[0.3em] flex-1">
           <span className="font-industria uppercase" style={LABEL}>
             {form.category}
           </span>
-          <select
+          <MarketSelect<MarketCategory>
             value={category}
-            onChange={(event) => setCategory(event.target.value as MarketCategory)}
-            className="flex relative w-full px-[0.5em] py-[0.5em] outline-none cursor-pointer"
-            style={FIELD}
-          >
-            {MARKET_CATEGORIES.map((value) => (
-              <option key={value} value={value}>
-                {text.categories[value]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex relative flex-col gap-[0.3em] flex-1">
+            onChange={setCategory}
+            label={form.category}
+            options={MARKET_CATEGORIES.map((value) => ({ value, label: text.categories[value] }))}
+            className="w-full"
+          />
+        </div>
+        <div className="flex relative flex-col gap-[0.3em] flex-1">
           <span className="font-industria uppercase" style={LABEL}>
             {form.condition}
           </span>
-          <select
+          <MarketSelect<MarketCondition>
             value={condition}
-            onChange={(event) => setCondition(event.target.value as MarketCondition)}
-            className="flex relative w-full px-[0.5em] py-[0.5em] outline-none cursor-pointer"
-            style={FIELD}
-          >
-            {MARKET_CONDITIONS.map((value) => (
-              <option key={value} value={value}>
-                {text.conditions[value]}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={setCondition}
+            label={form.condition}
+            options={MARKET_CONDITIONS.map((value) => ({ value, label: text.conditions[value] }))}
+            className="w-full"
+          />
+        </div>
       </div>
 
       <label className="flex relative flex-col gap-[0.3em]">
@@ -286,6 +289,35 @@ export default function MarketCreate({ store, text }: MarketViewProps) {
         {errors.photos && <span style={ERROR}>{errors.photos}</span>}
       </div>
 
+      <div className="flex relative flex-col gap-[0.3em]">
+        <span className="font-industria uppercase" style={LABEL}>
+          {form.contact}
+        </span>
+        <div className="flex relative flex-row @max-sm:flex-col gap-[0.6em]">
+          <MarketSelect<ContactMethod>
+            value={method}
+            onChange={setMethod}
+            label={form.contact}
+            options={CONTACT_METHODS.map((value) => ({ value, label: text.requests.contactMethods[value] }))}
+            className="w-[34%] @max-sm:w-full"
+          />
+          <input
+            value={handle}
+            onChange={(event) => setHandle(event.target.value)}
+            maxLength={120}
+            placeholder={method === "other" ? text.requests.contactOtherPlaceholder : text.requests.contactPlaceholder}
+            autoComplete="off"
+            aria-invalid={Boolean(errors.contact)}
+            className="flex relative flex-1 px-[0.7em] py-[0.5em] outline-none placeholder:opacity-60"
+            style={FIELD}
+          />
+        </div>
+        <span style={{ fontFamily: HELVETICA, fontWeight: 700, color: MARKET_COLORS.muted, fontSize: "0.9em" }}>
+          {form.contactHint}
+        </span>
+        {errors.contact && <span style={ERROR}>{errors.contact}</span>}
+      </div>
+
       <p
         className="flex relative px-[0.7em] py-[0.45em] self-start"
         style={{ fontFamily: HELVETICA, fontWeight: 700, backgroundColor: MARKET_COLORS.yellow, color: MARKET_COLORS.purple }}
@@ -293,14 +325,20 @@ export default function MarketCreate({ store, text }: MarketViewProps) {
         {form.lasts}
       </p>
 
+      {failed && (
+        <p role="alert" className="flex relative px-[0.7em] py-[0.4em]" style={{ ...ERROR, color: "#fff", backgroundColor: MARKET_COLORS.red }}>
+          {text.publishFailed}
+        </p>
+      )}
+
       <div className="flex relative flex-row flex-wrap gap-[0.7em]">
         <button
           type="submit"
-          disabled={processing}
-          className="flex relative px-[1em] py-[0.55em] font-industria uppercase cursor-pointer transition-transform duration-150 hover:-translate-y-[0.1em] disabled:opacity-60"
+          disabled={processing || publishing}
+          className="flex relative px-[1em] py-[0.55em] font-industria uppercase cursor-pointer transition-transform duration-150 hover:-translate-y-[0.1em] disabled:opacity-60 disabled:cursor-wait"
           style={{ backgroundColor: MARKET_COLORS.orange, color: "#fff", boxShadow: HARD_SHADOW(MARKET_COLORS.yellow) }}
         >
-          {form.publish}
+          {publishing ? text.publishing : form.publish}
         </button>
         <button
           type="button"

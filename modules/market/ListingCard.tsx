@@ -2,7 +2,7 @@ import Image from "next/image";
 import PriceBurst from "@/modules/market/PriceBurst";
 import ListingStatusMark from "@/modules/market/ListingStatusMark";
 import { LISTING_DAYS, NEW_DAYS } from "@/hooks/marketListings";
-import { fill, formatPrice } from "@/hooks/marketFormat";
+import { fill, formatPrice, listingLocation } from "@/hooks/marketFormat";
 import { HARD_SHADOW, HELVETICA, MARKET_COLORS } from "@/hooks/marketTheme";
 import { ListingCardProps } from "@/types/market.types";
 
@@ -83,17 +83,17 @@ export default function ListingCard({
           className="flex relative flex-row flex-wrap justify-between gap-x-[0.6em] font-industria uppercase"
           style={{ fontSize: "0.85em", color: MARKET_COLORS.yellow }}
         >
-          <span>{listing.location}</span>
+          <span>{listing.archived ? text.archived : listingLocation(listing, text)}</span>
           <span style={{ color: MARKET_COLORS.cream }}>
             {status === "sold"
               ? text.status.sold
               : expired
                 ? text.expired
                 : status === "pending"
-                ? text.status.pending
-                : left <= 1
-                  ? text.lastDay
-                  : fill(text.daysLeft, left)}
+                  ? text.status.pending
+                  : left <= 1
+                    ? text.lastDay
+                    : fill(text.daysLeft, left)}
           </span>
         </span>
       </div>

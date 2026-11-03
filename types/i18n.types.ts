@@ -1,4 +1,6 @@
 import type { ComputerLayer, HeadlineLine } from "@/types/parallax.types";
+import type { IdentityError } from "@/types/identity.types";
+import type { ContactMethod, HardwareId, ModId, ModRisk, ModText, SpaceId } from "@/types/requests.types";
 import type {
   MarketCategory,
   MarketCondition,
@@ -97,7 +99,20 @@ export interface MarketDictionary {
   payments: Record<PaymentMethod, string>;
   saleMethods: Record<SaleMethod, string>;
   soldFor: string;
+  locationDelivery: string;
   expired: string;
+  markSold: string;
+  freeze: string;
+  freezeHint: string;
+  freezeConfirm: string;
+  soldChoice: string;
+  soldDelete: string;
+  soldDeleteHint: string;
+  soldDeleteConfirm: string;
+  archived: string;
+  anonymous: string;
+  publishing: string;
+  publishFailed: string;
   republish: string;
   republishWithin: string;
   republishToday: string;
@@ -108,7 +123,11 @@ export interface MarketDictionary {
   postedAgo: string;
   conditions: Record<MarketCondition, string>;
   messageSeller: string;
-  messagesSoon: string;
+  contactTitle: string;
+  contactOffPlatform: string;
+  noContact: string;
+  copy: string;
+  copied: string;
   you: string;
   yourListing: string;
   delete: string;
@@ -134,6 +153,9 @@ export interface MarketDictionary {
     cover: string;
     removePhoto: string;
     processing: string;
+    contact: string;
+    contactHint: string;
+    needContact: string;
     lasts: string;
     publish: string;
     cancel: string;
@@ -144,6 +166,87 @@ export interface MarketDictionary {
   open: string;
   close: string;
   tapToOpen: string;
+  identity: IdentityText;
+  requests: RequestsText;
+}
+
+export interface RequestsText {
+  catalogTitle: string;
+  catalogHint: string;
+  riskLabel: string;
+  risk: Record<ModRisk, string>;
+  quote: string;
+  mods: Record<ModId, ModText>;
+  cardLabel: string;
+  cardPlaceholder: string;
+  spaceLabel: string;
+  spaces: Record<SpaceId, string>;
+  customModLabel: string;
+  customModPlaceholder: string;
+  hardwareLabel: string;
+  hardwareHint: string;
+  hardware: Record<HardwareId, string>;
+  hardwareOtherLabel: string;
+  hardwareOtherPlaceholder: string;
+  budgetLabel: string;
+  detailsLabel: string;
+  detailsPlaceholderMod: string;
+  detailsPlaceholderInstall: string;
+  photosLabel: string;
+  addPhotos: string;
+  removePhoto: string;
+  processing: string;
+  contactLabel: string;
+  contactHint: string;
+  contactMethods: Record<ContactMethod, string>;
+  contactPlaceholder: string;
+  contactOtherPlaceholder: string;
+  encryptedNote: string;
+  needIdentity: string;
+  send: string;
+  sending: string;
+  errors: {
+    needMod: string;
+    needCustom: string;
+    needCard: string;
+    needDetails: string;
+    needContact: string;
+    failed: string;
+    closed: string;
+  };
+  sentTitle: string;
+  sentBody: string;
+  another: string;
+}
+
+export interface IdentityText {
+  signIn: string;
+  titleLead: string;
+  titleMark: string;
+  intro: string;
+  walletTitle: string;
+  walletBody: string;
+  walletButton: string;
+  localTitle: string;
+  localBody: string;
+  localButton: string;
+  restoreTitle: string;
+  restoreBody: string;
+  restorePlaceholder: string;
+  openFile: string;
+  password: string;
+  restoreButton: string;
+  signedAs: string;
+  kindWallet: string;
+  kindLocal: string;
+  backupTitle: string;
+  backupBody: string;
+  backupButton: string;
+  signOut: string;
+  signOutWarn: string;
+  needIdentity: string;
+  working: string;
+  errors: Record<IdentityError, string>;
 }
 
 export interface LanguageSwitcherProps {

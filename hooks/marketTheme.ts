@@ -21,6 +21,8 @@ export const MARKET_IMAGES = {
   sold: "/images/sold.png",
   soonMod: "/images/moddedup.png",
   soonInstallation: "/images/custominstals.png",
+  lock: "/images/lock.png",
+  hammerhead: "/images/hammerheadmachine.png",
 };
 
 export const HARD_SHADOW = (color: string) => `0.28em 0.28em 0 ${color}`;

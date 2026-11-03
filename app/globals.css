@@ -29,24 +29,6 @@
   }
 }
 
-@keyframes desk-boop {
-  0% {
-    transform: scale(1, 1);
-  }
-  25% {
-    transform: scale(1.06, 0.92) translateY(2%);
-  }
-  55% {
-    transform: scale(0.96, 1.06) translateY(-3%);
-  }
-  80% {
-    transform: scale(1.02, 0.99);
-  }
-  100% {
-    transform: scale(1, 1);
-  }
-}
-
 @keyframes headline-in {
   from {
     opacity: 0;
@@ -56,6 +38,12 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 ::selection {

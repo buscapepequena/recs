@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import MarketBrowse from "@/modules/market/MarketBrowse";
 import MarketCreate from "@/modules/market/MarketCreate";
 import MarketDetail from "@/modules/market/MarketDetail";
-import MarketSoon from "@/modules/market/MarketSoon";
+import MarketService from "@/modules/market/MarketService";
+import MarketIdentity from "@/modules/market/MarketIdentity";
 import { MARKET_COLORS } from "@/hooks/marketTheme";
 import { MarketAppProps, MarketTab } from "@/types/market.types";
 
@@ -12,6 +13,7 @@ const TABS: MarketTab[] = [0, 1, 2];
 
 export default function MarketApp({
   store,
+  identity,
   text,
   htmlLang,
   tab,
@@ -61,30 +63,64 @@ export default function MarketApp({
             );
           })}
         </div>
-        <button
-          type="button"
-          onClick={variant === "screen" ? onExpand : onClose}
-          aria-label={variant === "screen" ? text.open : text.close}
-          title={variant === "screen" ? text.open : text.close}
-          className="flex relative items-center justify-center w-[1.9em] h-[1.9em] cursor-pointer font-industria transition-colors duration-150 hover:text-[#E9672B]"
-          style={{ color: MARKET_COLORS.text, border: `0.1em solid ${MARKET_COLORS.text}`, fontSize: "1.05em" }}
-        >
-          {variant === "screen" ? "⤢" : "✕"}
-        </button>
+        <div className="flex relative flex-row items-center gap-[0.4em]">
+          <button
+            type="button"
+            onClick={() => store.setView({ name: "identity" })}
+            className="flex relative items-center gap-[0.35em] px-[0.6em] h-[1.9em] font-industria uppercase cursor-pointer transition-colors duration-150"
+            style={{
+              backgroundColor: identity.identity ? MARKET_COLORS.text : "transparent",
+              color: identity.identity ? MARKET_COLORS.cream : MARKET_COLORS.text,
+              border: `0.1em solid ${MARKET_COLORS.text}`,
+            }}
+          >
+            <span aria-hidden>{identity.identity ? "●" : "○"}</span>
+            {identity.identity ? identity.identity.short : text.identity.signIn}
+          </button>
+          <button
+            type="button"
+            onClick={variant === "screen" ? onExpand : onClose}
+            aria-label={variant === "screen" ? text.open : text.close}
+            title={variant === "screen" ? text.open : text.close}
+            className="flex relative items-center justify-center w-[1.9em] h-[1.9em] cursor-pointer font-industria transition-colors duration-150 hover:text-[#E9672B]"
+            style={{ color: MARKET_COLORS.text, border: `0.1em solid ${MARKET_COLORS.text}`, fontSize: "1.05em" }}
+          >
+            {variant === "screen" ? "⤢" : "✕"}
+          </button>
+        </div>
       </div>
 
       <div
         ref={scrollRef}
         className="flex relative flex-col flex-1 min-h-0 overflow-y-auto overscroll-contain px-[1.1em] py-[1em]"
       >
-        {tab !== 2 ? (
-          <MarketSoon text={text} tab={tab} />
+        {store.view.name === "identity" ? (
+          <MarketIdentity
+            store={store}
+            identity={identity}
+            text={text}
+            htmlLang={htmlLang}
+            next={store.view.next}
+          />
+        ) : tab !== 2 ? (
+          <MarketService
+            text={text}
+            tab={tab}
+            identity={identity}
+            onNeedIdentity={() => store.setView({ name: "identity" })}
+          />
         ) : store.view.name === "create" ? (
-          <MarketCreate store={store} text={text} htmlLang={htmlLang} />
+          <MarketCreate store={store} identity={identity} text={text} htmlLang={htmlLang} />
         ) : store.view.name === "detail" ? (
-          <MarketDetail store={store} text={text} htmlLang={htmlLang} id={store.view.id} />
+          <MarketDetail
+            store={store}
+            identity={identity}
+            text={text}
+            htmlLang={htmlLang}
+            id={store.view.id}
+          />
         ) : (
-          <MarketBrowse store={store} text={text} htmlLang={htmlLang} />
+          <MarketBrowse store={store} identity={identity} text={text} htmlLang={htmlLang} />
         )}
       </div>
     </div>

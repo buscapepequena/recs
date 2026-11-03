@@ -1,4 +1,7 @@
-import { MarketCurrency } from "@/types/market.types";
+import { Listing, MarketCurrency, MarketText } from "@/types/market.types";
+
+export const listingLocation = (listing: Listing, text: MarketText) =>
+  listing.locationKind === "delivery" ? text.locationDelivery : listing.location;
 
 export const fill = (template: string, n: number | string) =>
   template.replace("{n}", String(n));

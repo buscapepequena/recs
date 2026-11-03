@@ -1,6 +1,18 @@
 import type { Dictionary } from "@/types/i18n.types";
+import type { IdentityStore } from "@/types/identity.types";
+import type { ContactMethod } from "@/types/requests.types";
 
-export type MarketCategory = "gpu" | "memory" | "cpu" | "cooling" | "rig" | "peripheral" | "other";
+export type MarketCategory =
+  | "gpu"
+  | "memory"
+  | "cpu"
+  | "cooling"
+  | "rig"
+  | "peripheral"
+  | "security"
+  | "confidential"
+  | "boards"
+  | "other";
 
 export type MarketCondition = "new" | "likeNew" | "used" | "parts";
 
@@ -28,6 +40,11 @@ export interface ListingOptions {
   obo?: boolean;
 }
 
+export interface ListingContact {
+  method: ContactMethod;
+  handle: string;
+}
+
 export interface ListingSale {
   price: number;
   currency: MarketCurrency;
@@ -38,7 +55,8 @@ export interface ListingSale {
 export type MarketView =
   | { name: "browse" }
   | { name: "detail"; id: string }
-  | { name: "create" };
+  | { name: "create" }
+  | { name: "identity"; next?: "create" };
 
 export interface Listing {
   id: string;
@@ -49,13 +67,19 @@ export interface Listing {
   category: MarketCategory;
   condition: MarketCondition;
   location: string;
+  locationKind?: "delivery";
   photos: string[];
   seller: string;
+  sellerKey?: string;
   status?: ListingStatus;
   attributes?: ListingAttributes;
   options?: ListingOptions;
   payments?: PaymentMethod[];
   sale?: ListingSale;
+  contact?: ListingContact;
+  archived?: boolean;
+  dTag?: string;
+  eventId?: string;
   ageDays?: number;
   createdAt?: number;
   mine?: boolean;
@@ -70,6 +94,7 @@ export interface ListingDraft {
   condition: MarketCondition;
   location: string;
   photos: string[];
+  contact: ListingContact;
 }
 
 export type MarketText = Dictionary["market"];
@@ -92,9 +117,11 @@ export interface MarketStore {
   ageOf: (listing: Listing) => number;
   isExpired: (listing: Listing) => boolean;
   graceLeft: (listing: Listing) => number;
-  add: (draft: ListingDraft) => void;
-  republish: (id: string) => void;
-  remove: (id: string) => void;
+  remote: boolean;
+  add: (draft: ListingDraft) => Promise<boolean>;
+  republish: (id: string) => Promise<boolean>;
+  remove: (id: string) => Promise<boolean>;
+  freeze: (id: string) => Promise<boolean>;
 }
 
 export interface MarketScreenProps {
@@ -104,6 +131,7 @@ export interface MarketScreenProps {
 
 export interface MarketAppProps {
   store: MarketStore;
+  identity: IdentityStore;
   text: MarketText;
   htmlLang: string;
   tab: MarketTab;
@@ -115,13 +143,18 @@ export interface MarketAppProps {
 
 export interface MarketViewProps {
   store: MarketStore;
+  identity: IdentityStore;
   text: MarketText;
   htmlLang: string;
 }
 
 export type MarketFormErrors = Partial<
-  Record<"title" | "price" | "location" | "description" | "photos", string>
+  Record<"title" | "price" | "location" | "description" | "photos" | "contact", string>
 >;
+
+export interface MarketIdentityProps extends MarketViewProps {
+  next?: "create";
+}
 
 export interface MarketDetailProps extends MarketViewProps {
   id: string;
@@ -132,9 +165,17 @@ export interface MarketBackProps {
   onBack: () => void;
 }
 
-export interface MarketSoonProps {
-  text: MarketText;
-  tab: 0 | 1;
+export interface MarketSelectOption<T extends string> {
+  value: T;
+  label: string;
+}
+
+export interface MarketSelectProps<T extends string> {
+  value: T;
+  options: MarketSelectOption<T>[];
+  onChange: (value: T) => void;
+  label: string;
+  className?: string;
 }
 
 export interface ListingStatusMarkProps {
