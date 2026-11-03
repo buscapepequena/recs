@@ -2,6 +2,8 @@ import { ParallaxLayer } from "@/types/parallax.types";
 
 export const FLOOR = "#bb8bc1";
 export const BASE = "#766CB3";
+export const POSTER_TOP = "#231354";
+export const POSTER_BOTTOM = "#4630b4";
 export const SKY_TOP =
   "linear-gradient(to right, #8571b5 0%, #c98bc3 25%, #9b80cb 50%, #bd8ecf 75%, #e99cce 100%)";
 

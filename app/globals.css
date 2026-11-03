@@ -10,6 +10,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-souvenir: var(--font-souvenir-face);
+  --font-industria: var(--font-industria-face);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,6 +26,27 @@
     scrollbar-width: thin;
     scrollbar-color: #bb8bc1 #766cb3;
   }
+}
+
+@keyframes headline-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6cqw);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+::selection {
+  background: #bb8bc1;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: #bb8bc1;
+  color: #ffffff;
 }
 
 ::-webkit-scrollbar {

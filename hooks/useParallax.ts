@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { ParallaxLayer, ParallaxRefs } from "@/types/parallax.types";
 
 const POINTER_Y = 24;
-const SCROLL_RISE = 0.9;
+const SCROLL_LAG = 0.6;
 
 export const useParallax = (layers: ParallaxLayer[]): ParallaxRefs => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -15,8 +15,8 @@ export const useParallax = (layers: ParallaxLayer[]): ParallaxRefs => {
     const section = sectionRef.current;
     if (!section) return;
 
-    const target = { y: 0, p: 0 };
-    const current = { y: 0, p: 0 };
+    const target = { y: 0, s: 0 };
+    const current = { y: 0, s: 0 };
     let frame = 0;
 
     const onPointerMove = (e: PointerEvent) => {
@@ -29,19 +29,17 @@ export const useParallax = (layers: ParallaxLayer[]): ParallaxRefs => {
 
     const onScroll = () => {
       const rect = section.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
-      target.p = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
+      target.s = Math.min(rect.height, Math.max(0, -rect.top));
     };
 
     const render = (time: number) => {
-      const height = window.innerHeight;
       const seconds = time / 1000;
       layers.forEach((layer, i) => {
         const el = layerRefs.current[i];
         if (el) {
           const ty =
-            -((current.y + 1) / 2) * layer.depth * POINTER_Y -
-            current.p * layer.depth * height * SCROLL_RISE;
+            -((current.y + 1) / 2) * layer.depth * POINTER_Y +
+            current.s * (1 - layer.depth) * SCROLL_LAG;
           el.style.transform = `translate3d(0, ${ty}px, 0)`;
         }
 
@@ -62,12 +60,13 @@ export const useParallax = (layers: ParallaxLayer[]): ParallaxRefs => {
 
     const tick = (time: number) => {
       current.y += (target.y - current.y) * 0.06;
-      current.p += (target.p - current.p) * 0.1;
+      current.s += (target.s - current.s) * 0.2;
       render(time);
       frame = requestAnimationFrame(tick);
     };
 
     onScroll();
+    current.s = target.s;
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.documentElement.addEventListener("pointerleave", onPointerLeave);
     window.addEventListener("scroll", onScroll, { passive: true });

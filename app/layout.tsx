@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { industria, souvenir } from "@/hooks/fonts";
 
 export const metadata: Metadata = {
   title: "recs",
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`h-full antialiased`}>
+    <html lang="en" className={`h-full antialiased ${souvenir.variable} ${industria.variable}`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
