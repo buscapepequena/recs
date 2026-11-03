@@ -34,6 +34,20 @@ export interface GpuSectionProps {
   id: string;
 }
 
+export interface ComputerLayer {
+  src: string;
+  left: number;
+  top: number;
+  width: number;
+  ratio: number;
+  depth: number;
+}
+
+export interface ComputerParallaxProps {
+  layers: ComputerLayer[];
+  alt: string;
+}
+
 export interface PrivacyMarkProps {
   src: string;
   alt: string;

@@ -1,4 +1,4 @@
-import type { HeadlineLine } from "@/types/parallax.types";
+import type { ComputerLayer, HeadlineLine } from "@/types/parallax.types";
 
 export type Locale = "en" | "es" | "pt-br" | "it" | "tw";
 
@@ -51,6 +51,6 @@ export interface LanguageSwitcherProps {
 
 export interface IssueSectionProps {
   date: string;
-  computerSrc: string;
+  computerLayers: ComputerLayer[];
   computerAlt: string;
 }

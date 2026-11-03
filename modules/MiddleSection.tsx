@@ -1,6 +1,7 @@
 import SitioBlock from "@/modules/SitioBlock";
 import IssueSection from "@/modules/IssueSection";
 import { SITIO_IMAGES } from "@/hooks/sitioImages";
+import { COMPUTER_LAYERS } from "@/hooks/computerLayers";
 import { versionSrc } from "@/hooks/imageVersions";
 import { MiddleSectionProps } from "@/types/parallax.types";
 
@@ -27,7 +28,7 @@ export default function MiddleSection({ text, issue }: MiddleSectionProps) {
       />
       <IssueSection
         date={issue.date}
-        computerSrc={versionSrc("/images/ordenador.png")}
+        computerLayers={COMPUTER_LAYERS.map((layer) => ({ ...layer, src: versionSrc(layer.src) }))}
         computerAlt={issue.computer}
       />
     </div>

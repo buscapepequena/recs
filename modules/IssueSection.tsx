@@ -1,10 +1,10 @@
-import Image from "next/image";
+import ComputerParallax from "@/modules/ComputerParallax";
 import { IssueSectionProps } from "@/types/i18n.types";
 
 const ISSUE_YELLOW = "#f3d13e";
 const RULE = "#f1ead2";
 
-export default function IssueSection({ date, computerSrc, computerAlt }: IssueSectionProps) {
+export default function IssueSection({ date, computerLayers, computerAlt }: IssueSectionProps) {
   return (
     <div className="flex relative flex-col items-center w-full max-w-[1100px] mt-20 md:mt-[8vw] pb-16 md:pb-[10vw]">
       <div className="flex relative flex-row justify-end w-full">
@@ -27,16 +27,7 @@ export default function IssueSection({ date, computerSrc, computerAlt }: IssueSe
         style={{ height: "clamp(2px, 0.25vw, 3px)", backgroundColor: RULE }}
       />
       <div className="flex relative w-full mt-12 md:mt-[6vw]">
-        <Image
-          src={computerSrc}
-          alt={computerAlt}
-          width={0}
-          height={0}
-          unoptimized
-          sizes="(min-width: 1100px) 1100px, 100vw"
-          draggable={false}
-          className="w-full h-auto select-none"
-        />
+        <ComputerParallax layers={computerLayers} alt={computerAlt} />
       </div>
     </div>
   );
