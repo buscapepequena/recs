@@ -45,7 +45,13 @@ export default function MarketScreen({ text, htmlLang }: MarketScreenProps) {
   return (
     <>
       <div className="@container flex relative w-full h-full overflow-hidden">
-        {!open && <div className="flex relative w-full h-full @max-xl:hidden">{app("screen")}</div>}
+        {!open && (
+          <div className="flex relative w-full h-full p-[1.8cqw] @max-xl:hidden">
+            <div className="flex relative w-full h-full overflow-hidden rounded-[0.8cqw]">
+              {app("screen")}
+            </div>
+          </div>
+        )}
         <button
           type="button"
           onClick={() => setOpen(true)}
