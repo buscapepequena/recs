@@ -4,8 +4,9 @@ import Image from "next/image";
 import { useState } from "react";
 import MarketBack from "@/modules/market/MarketBack";
 import PriceBurst from "@/modules/market/PriceBurst";
+import ListingStatusMark from "@/modules/market/ListingStatusMark";
 import { LISTING_DAYS } from "@/hooks/marketListings";
-import { fill, formatPrice } from "@/hooks/marketFormat";
+import { fill, formatDate, formatPrice } from "@/hooks/marketFormat";
 import { HARD_SHADOW, HELVETICA, MARKET_COLORS } from "@/hooks/marketTheme";
 import { MarketDetailProps } from "@/types/market.types";
 
@@ -28,14 +29,42 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
 
   const age = store.ageOf(listing);
   const left = LISTING_DAYS - age;
+  const status = listing.status ?? "available";
+  const expired = store.isExpired(listing);
+  const grace = store.graceLeft(listing);
+  const sellerAds = listing.mine ? 0 : store.countBySeller(listing.seller);
   const rows: [string, string][] = [
     [text.details.condition, text.conditions[listing.condition]],
     [text.details.category, text.categories[listing.category]],
     [text.details.location, listing.location],
     [text.details.posted, age === 0 ? text.today : fill(text.postedAgo, age)],
-    [text.details.expires, left <= 1 ? text.lastDay : fill(text.daysLeft, left)],
+    [
+      text.details.expires,
+      status === "sold"
+        ? text.status.sold
+        : expired
+          ? text.expired
+          : status === "pending"
+          ? text.status.pending
+          : left <= 1
+            ? text.lastDay
+            : fill(text.daysLeft, left),
+    ],
     [text.details.seller, listing.mine ? text.you : `@${listing.seller}`],
   ];
+  const extra: [string, string | undefined][] = [
+    [text.details.make, listing.attributes?.make],
+    [text.details.model, listing.attributes?.model],
+    [text.details.size, listing.attributes?.size],
+    [text.details.payment, listing.payments?.map((method) => text.payments[method]).join(" · ")],
+  ];
+  extra.forEach(([label, value]) => {
+    if (value) rows.splice(rows.length - 1, 0, [label, value]);
+  });
+  const tags = [
+    listing.options?.crypto ? text.options.crypto : null,
+    listing.options?.delivery ? text.options.delivery : null,
+  ].filter((tag): tag is string => Boolean(tag));
 
   return (
     <div className="flex relative flex-col gap-[1em] w-full">
@@ -63,6 +92,7 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
                 className="object-cover select-none"
               />
             )}
+            <ListingStatusMark status={listing.status} text={text} />
           </div>
           {listing.photos.length > 1 && (
             <div className="flex relative flex-row flex-wrap gap-[0.5em]">
@@ -93,17 +123,66 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
             </h3>
             <PriceBurst
               label={formatPrice(listing.price, listing.currency, htmlLang)}
-              className="relative shrink-0 w-[6.6em] text-[1em]"
+              className="relative shrink-0 w-[8em] text-[1em]"
             />
           </div>
 
-          {listing.mine && (
-            <span
-              className="flex relative self-start px-[0.5em] py-[0.15em] font-industria uppercase"
-              style={{ backgroundColor: MARKET_COLORS.red, color: "#fff" }}
+          {(listing.mine || listing.options?.obo) && (
+            <div className="flex relative flex-row flex-wrap gap-[0.5em]">
+              {listing.mine && (
+                <span
+                  className="flex relative px-[0.5em] py-[0.15em] font-industria uppercase"
+                  style={{ backgroundColor: MARKET_COLORS.red, color: "#fff" }}
+                >
+                  {text.yourListing}
+                </span>
+              )}
+              {listing.options?.obo && (
+                <span
+                  className="flex relative px-[0.5em] py-[0.1em] font-industria uppercase"
+                  style={{ border: `0.12em solid ${MARKET_COLORS.orange}`, color: MARKET_COLORS.orange }}
+                >
+                  {text.obo}
+                </span>
+              )}
+            </div>
+          )}
+
+          {listing.mine && expired && (
+            <div
+              className="flex relative flex-row flex-wrap items-center justify-between gap-[0.6em] px-[0.8em] py-[0.55em]"
+              style={{ backgroundColor: MARKET_COLORS.yellow, color: MARKET_COLORS.text }}
             >
-              {text.yourListing}
-            </span>
+              <span style={{ fontFamily: HELVETICA, fontWeight: 700 }}>
+                {grace <= 1 ? text.republishToday : fill(text.republishWithin, grace)}
+              </span>
+              <button
+                type="button"
+                onClick={() => store.republish(listing.id)}
+                className="flex relative px-[0.8em] py-[0.35em] font-industria uppercase cursor-pointer"
+                style={{ backgroundColor: MARKET_COLORS.orange, color: "#fff" }}
+              >
+                {text.republish}
+              </button>
+            </div>
+          )}
+
+          {listing.sale && (
+            <div
+              className="flex relative flex-col gap-[0.15em] px-[0.8em] py-[0.55em]"
+              style={{
+                backgroundColor: MARKET_COLORS.yellow,
+                color: MARKET_COLORS.text,
+                boxShadow: HARD_SHADOW(MARKET_COLORS.orange),
+              }}
+            >
+              <span className="font-souvenir font-medium text-[1.25em] leading-none">
+                {fill(text.soldFor, formatPrice(listing.sale.price, listing.sale.currency, htmlLang))}
+              </span>
+              <span className="font-industria uppercase">
+                {text.saleMethods[listing.sale.method]} · {formatDate(listing.sale.date, htmlLang)}
+              </span>
+            </div>
           )}
 
           <div
@@ -129,6 +208,20 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
             ))}
           </div>
 
+          {tags.length > 0 && (
+            <div className="flex relative flex-row flex-wrap gap-[0.45em]">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="flex relative px-[0.55em] py-[0.2em] font-industria uppercase"
+                  style={{ backgroundColor: MARKET_COLORS.text, color: MARKET_COLORS.cream, fontSize: "0.9em" }}
+                >
+                  ✓ {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
           <p
             className="flex relative whitespace-pre-line leading-[1.35]"
             style={{ fontFamily: HELVETICA, fontWeight: 700, color: MARKET_COLORS.text }}
@@ -137,7 +230,7 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
           </p>
 
           <div className="flex relative flex-row flex-wrap gap-[0.7em]">
-            {!listing.mine && (
+            {!listing.mine && status !== "sold" && (
               <button
                 type="button"
                 onClick={() => setNote(true)}
@@ -149,6 +242,16 @@ export default function MarketDetail({ store, text, htmlLang, id }: MarketDetail
                 }}
               >
                 {text.messageSeller}
+              </button>
+            )}
+            {sellerAds > 1 && (
+              <button
+                type="button"
+                onClick={() => store.setSeller(listing.seller)}
+                className="flex relative px-[0.9em] py-[0.5em] font-industria uppercase cursor-pointer"
+                style={{ border: `0.14em solid ${MARKET_COLORS.text}`, color: MARKET_COLORS.text }}
+              >
+                {text.moreBySeller} ({sellerAds})
               </button>
             )}
             {listing.mine && (

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 const EASE = 0.12;
 
-export function useScrollLayers(depths: number[]) {
+export function useScrollLayers(depths: number[], rotations: number[] = []) {
   const boxRef = useRef<HTMLDivElement | null>(null);
   const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -26,7 +26,9 @@ export function useScrollLayers(depths: number[]) {
       current += (target - current) * EASE;
       const width = box.clientWidth;
       layerRefs.current.forEach((layer, i) => {
-        if (layer) layer.style.transform = `translate3d(0, ${current * depths[i] * width}px, 0)`;
+        if (!layer) return;
+        const rotate = (rotations[i] ?? 0) * current;
+        layer.style.transform = `translate3d(0, ${current * depths[i] * width}px, 0) rotate(${rotate}deg)`;
       });
       frame = requestAnimationFrame(render);
     };
@@ -41,7 +43,7 @@ export function useScrollLayers(depths: number[]) {
       window.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
     };
-  }, [depths]);
+  }, [depths, rotations]);
 
   return { boxRef, layerRefs };
 }

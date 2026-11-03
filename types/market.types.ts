@@ -10,6 +10,31 @@ export type MarketSort = "newest" | "priceLow" | "priceHigh";
 
 export type MarketTab = 0 | 1 | 2;
 
+export type ListingStatus = "available" | "pending" | "sold";
+
+export type PaymentMethod = "crypto" | "cash" | "ach";
+
+export type SaleMethod = "otc" | "otcCash" | "crypto" | "cash" | "ach";
+
+export interface ListingAttributes {
+  make?: string;
+  model?: string;
+  size?: string;
+}
+
+export interface ListingOptions {
+  crypto?: boolean;
+  delivery?: boolean;
+  obo?: boolean;
+}
+
+export interface ListingSale {
+  price: number;
+  currency: MarketCurrency;
+  method: SaleMethod;
+  date: string;
+}
+
 export type MarketView =
   | { name: "browse" }
   | { name: "detail"; id: string }
@@ -26,6 +51,11 @@ export interface Listing {
   location: string;
   photos: string[];
   seller: string;
+  status?: ListingStatus;
+  attributes?: ListingAttributes;
+  options?: ListingOptions;
+  payments?: PaymentMethod[];
+  sale?: ListingSale;
   ageDays?: number;
   createdAt?: number;
   mine?: boolean;
@@ -54,10 +84,16 @@ export interface MarketStore {
   setCategory: (category: MarketCategory | "all") => void;
   sort: MarketSort;
   setSort: (sort: MarketSort) => void;
+  seller: string | null;
+  setSeller: (seller: string | null) => void;
+  countBySeller: (seller: string) => number;
   visible: Listing[];
   find: (id: string) => Listing | undefined;
   ageOf: (listing: Listing) => number;
+  isExpired: (listing: Listing) => boolean;
+  graceLeft: (listing: Listing) => number;
   add: (draft: ListingDraft) => void;
+  republish: (id: string) => void;
   remove: (id: string) => void;
 }
 
@@ -101,6 +137,11 @@ export interface MarketSoonProps {
   tab: 0 | 1;
 }
 
+export interface ListingStatusMarkProps {
+  status?: ListingStatus;
+  text: MarketText;
+}
+
 export interface MarkTextProps {
   lead: string;
   mark: string;
@@ -118,5 +159,6 @@ export interface ListingCardProps {
   text: MarketText;
   htmlLang: string;
   age: number;
+  expired: boolean;
   onOpen: () => void;
 }

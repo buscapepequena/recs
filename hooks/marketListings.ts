@@ -5,7 +5,9 @@ import {
   MarketCurrency,
 } from "@/types/market.types";
 
-export const LISTING_DAYS = 30;
+export const LISTING_DAYS = 7;
+
+export const GRACE_DAYS = 2;
 
 export const MAX_PHOTOS = 6;
 
@@ -25,89 +27,90 @@ export const MARKET_CONDITIONS: MarketCondition[] = ["new", "likeNew", "used", "
 
 export const MARKET_CURRENCIES: MarketCurrency[] = ["USD", "USDT"];
 
+const NYC_PAYMENTS: Listing["payments"] = ["crypto", "cash", "ach"];
+
 export const SAMPLE_LISTINGS: Listing[] = [
   {
-    id: "rtx-4090-flashed",
-    title: "RTX 4090 — flashed BIOS, custom water block",
+    id: "rezygcki",
+    title: "Rezygcki",
     description:
-      "Founders Edition with a full-cover water block and a stable +180 MHz core overclock. Thermals never pass 52 °C under load. Original air cooler and box included. Benchmarks on request.",
-    price: 1650,
+      "An air-gapped hardware wallet (isolated from the network). An ESP32-S3 board with an NXP SE051 secure element generates and stores private keys that never leave the chip. Every signature is approved with a physical button on the device itself.",
+    price: 60,
+    currency: "USD",
+    category: "other",
+    condition: "new",
+    location: "New York City",
+    photos: ["/images/rezygcki.png"],
+    seller: "recomp_nyc",
+    ageDays: 0,
+  },
+  {
+    id: "msi-rtx-4090-suprim-liquid-x",
+    title: "MSI GeForce RTX 4090 SUPRIM LIQUID X 24G",
+    description:
+      "Selling my MSI GeForce RTX 4090 SUPRIM LIQUID X 24G graphics card, previously installed in an MSI Infinite RS 13th system.\n\n- Exact model on the label: GeForce RTX 4090 SUPRIM LIQUID X 24G\n- NVIDIA GeForce RTX 4090; 24GB GDDR6X VRAM\n- Factory liquid cooling with 240mm radiator, two radiator fans, and an integrated GPU fan\n- Actual photos plus a video showing the computer running are available\n- Includes the graphics card and its factory attached cooling assembly; case fans and CPU cooling shown in some system photos are not part of the sale\n\nUsed – Excellent Working Condition. Fully functional, carefully maintained, with no known operating issues. Video showing the GPU operating in the original computer is available.\n\nAsking $2,450 OBO. Based in New York City. Buyers should verify case/radiator clearance, power-supply capacity and compatible power connection before purchase.\n\nNYC local pickup available. Shipping available throughout at buyer's expense. Payment accepted via cryptocurrency, cash (in person), or direct bank transfer (ACH).",
+    price: 2450,
     currency: "USD",
     category: "gpu",
     condition: "likeNew",
-    location: "Accra",
-    photos: ["/images/mod.png", "/images/equipment.png"],
-    seller: "silicon_surgeon",
-    ageDays: 1,
+    location: "New York City",
+    photos: ["/images/rtx4090.png"],
+    seller: "recomp_nyc",
+    status: "sold",
+    attributes: {
+      make: "MSI",
+      model: "RTX 4090 SUPRIM LIQUID X 24G",
+      size: "24GB GDDR6X, 240mm radiator",
+    },
+    options: { crypto: true, delivery: true, obo: true },
+    payments: NYC_PAYMENTS,
+    sale: { price: 2500, currency: "USD", method: "otcCash", date: "2026-10-29" },
+    ageDays: 9,
   },
   {
-    id: "rtx-6000-ada",
-    title: "RTX 6000 Ada 48 GB — sealed",
+    id: "corsair-dominator-platinum-128gb",
+    title: "Corsair Dominator Platinum RGB 128GB DDR5-5200 CL40 (4x32GB)",
     description:
-      "Brand new, factory sealed workstation card. 48 GB ECC memory, perfect for local LLMs and rendering. Pickup or insured shipping.",
-    price: 6800,
-    currency: "USDT",
-    category: "gpu",
-    condition: "new",
-    location: "Kumasi",
-    photos: ["/images/rtx6000.png"],
-    seller: "kumasi_compute",
-    ageDays: 4,
-  },
-  {
-    id: "monster-lan-rig",
-    title: "Monster LAN rig — 4 full stations",
-    description:
-      "Four matched gaming stations from our last tournament. Each one with RGB loop cooling, 32 GB RAM and a 27\" monitor. Sold together only.",
-    price: 4200,
-    currency: "USDT",
-    category: "rig",
-    condition: "used",
-    location: "São Paulo",
-    photos: ["/images/monsterlan.png", "/images/installation.png"],
-    seller: "lan_monsters",
+      "Selling four Corsair Dominator Platinum RGB black DDR5 desktop RAM modules, 32GB each (128GB total).\n\n- Exact model/kit part number on each module: CMT64GX5M2B5200C40\n- Four 32GB DDR5 UDIMMs, 128GB total\n- Rated speed: 5200 MT/s; CL40; primary timings 40-40-40-77; 1.25V\n- Version shown on labels: 3.43.01; RGB lighting\n- Each part number refers to a 64GB (2x32GB) kit specification\n- Windows screenshot shows all four Corsair modules detected at 5200 MT/s\n- Condition: Used – Like New / Excellent Condition. Fully functional, meticulously maintained, with no known operating issues.\n- Includes: four RAM modules (original retail packaging not promised)\n\nAsking $1,150 OBO. Based in New York City. Four-DIMM operation and achievable speed depend on motherboard/CPU compatibility.\n\nNYC local pickup available. Shipping available at buyer's expense. Payment accepted via cryptocurrency, cash (in person), or direct bank transfer (ACH).\n\nFull serial numbers may be obscured in photos as a precaution. Original photos, videos, and additional verification are available upon request for serious buyers.",
+    price: 1150,
+    currency: "USD",
+    category: "memory",
+    condition: "likeNew",
+    location: "New York City",
+    photos: ["/images/corsair.png"],
+    seller: "recomp_nyc",
+    status: "sold",
+    attributes: {
+      make: "Corsair",
+      model: "CMT64GX5M2B5200C40",
+      size: "128GB (4 x 32GB) DDR5",
+    },
+    options: { crypto: true, delivery: true, obo: true },
+    payments: NYC_PAYMENTS,
+    sale: { price: 1150, currency: "USD", method: "otc", date: "2026-10-30" },
     ageDays: 6,
   },
   {
-    id: "gpu-rack-loop",
-    title: "Custom loop GPU rack, 4 × slots",
+    id: "kingston-fury-beast-64gb",
+    title: "Kingston FURY Beast 64GB DDR5-5600 CL40 (2x32GB)",
     description:
-      "Open frame rack with a dual-radiator loop, quick disconnects and a PSU for four cards. Cards not included. Tested and leak-free.",
-    price: 2800,
+      "Selling two Kingston FURY Beast black, non-RGB DDR5 desktop memory modules, 32GB each (64GB total).\n\n- Exact part number on BOTH modules: KF556C40BB-32\n- Capacity: 64GB total (2 x 32GB), DDR5 UDIMM\n- Rated speed: DDR5-5600 / 5600 MT/s (XMP profile)\n- CAS latency: CL40; rated XMP voltage: 1.25V\n- Black heat spreaders, no RGB\n- Both modules have matching part numbers\n- Used; fully functional, no known operating issues\n- Includes: two RAM modules (original retail packaging not promised)\n\nUsed – Like New / Excellent Condition. Fully functional, meticulously maintained, with no known operating issues.\n\nNYC local pickup available. Shipping available at buyer's expense. Payment accepted via cryptocurrency, cash (in person), or direct bank transfer (ACH).",
+    price: 625,
     currency: "USD",
-    category: "cooling",
-    condition: "used",
-    location: "Milano",
-    photos: ["/images/equipment.png"],
-    seller: "loop_lab",
+    category: "memory",
+    condition: "likeNew",
+    location: "New York City",
+    photos: ["/images/kingston.png"],
+    seller: "recomp_nyc",
+    status: "sold",
+    attributes: {
+      make: "Kingston",
+      model: "KF556C40BB-32",
+      size: "64GB (2 x 32GB) DDR5 RAM",
+    },
+    options: { crypto: true, delivery: true },
+    payments: NYC_PAYMENTS,
+    sale: { price: 500, currency: "USD", method: "otcCash", date: "2026-10-24" },
     ageDays: 12,
-  },
-  {
-    id: "streaming-den-kit",
-    title: "Streaming den install kit",
-    description:
-      "Desk, capture card, key light, boom arm and acoustic panels. Everything you need to turn a spare room into a streaming den.",
-    price: 950,
-    currency: "USD",
-    category: "peripheral",
-    condition: "new",
-    location: "Madrid",
-    photos: ["/images/installation.png"],
-    seller: "den_builder",
-    ageDays: 2,
-  },
-  {
-    id: "clock-and-cash",
-    title: "Retro desk clock (set prop)",
-    description:
-      "Vintage desk clock used as a set prop for our market shoot. Still ticks. Banknotes not included, sorry.",
-    price: 40,
-    currency: "USD",
-    category: "other",
-    condition: "used",
-    location: "Lisboa",
-    photos: ["/images/market.png"],
-    seller: "prop_shop",
-    ageDays: 27,
   },
 ];

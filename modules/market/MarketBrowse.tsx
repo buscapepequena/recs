@@ -21,7 +21,7 @@ export default function MarketBrowse({ store, text, htmlLang }: MarketViewProps)
             mark={text.titleMark}
             className="text-[2.2em] leading-none"
           />
-          <PriceBurst label={text.burst} className="relative w-[5.4em] text-[0.8em]" />
+          <PriceBurst label={text.burst} className="relative w-[7em] text-[0.85em]" />
         </div>
         <button
           type="button"
@@ -111,6 +111,23 @@ export default function MarketBrowse({ store, text, htmlLang }: MarketViewProps)
         })}
       </div>
 
+      {store.seller && (
+        <div
+          className="flex relative flex-row flex-wrap items-center justify-between gap-[0.6em] px-[0.8em] py-[0.5em]"
+          style={{ backgroundColor: MARKET_COLORS.text, color: MARKET_COLORS.cream }}
+        >
+          <span className="font-industria uppercase">{fill(text.adsBy, `@${store.seller}`)}</span>
+          <button
+            type="button"
+            onClick={() => store.setSeller(null)}
+            className="flex relative px-[0.6em] py-[0.15em] font-industria uppercase cursor-pointer"
+            style={{ backgroundColor: MARKET_COLORS.orange, color: "#fff" }}
+          >
+            {text.showAll}
+          </button>
+        </div>
+      )}
+
       <span className="flex relative font-industria uppercase" style={{ color: MARKET_COLORS.orange }}>
         {count === 1 ? text.resultsOne : fill(text.results, count)}
       </span>
@@ -131,6 +148,7 @@ export default function MarketBrowse({ store, text, htmlLang }: MarketViewProps)
               text={text}
               htmlLang={htmlLang}
               age={store.ageOf(listing)}
+              expired={store.isExpired(listing)}
               onOpen={() => store.setView({ name: "detail", id: listing.id })}
             />
           ))}

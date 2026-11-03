@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LISTING_DAYS, SAMPLE_LISTINGS } from "@/hooks/marketListings";
+import { GRACE_DAYS, LISTING_DAYS, SAMPLE_LISTINGS } from "@/hooks/marketListings";
 import {
   Listing,
   ListingDraft,
@@ -38,11 +38,7 @@ export function useMarketStore(): MarketStore {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<MarketCategory | "all">("all");
   const [sort, setSort] = useState<MarketSort>("newest");
-
-  useEffect(() => {
-    setNow(Date.now());
-    setMine(readMine());
-  }, []);
+  const [seller, setSellerState] = useState<string | null>(null);
 
   const ageOf = useCallback(
     (listing: Listing) => {
@@ -52,14 +48,45 @@ export function useMarketStore(): MarketStore {
     [now],
   );
 
+  useEffect(() => {
+    const current = Date.now();
+    setNow(current);
+    const stored = readMine();
+    const alive = stored.filter(
+      (listing) =>
+        listing.status === "sold" ||
+        !listing.createdAt ||
+        (current - listing.createdAt) / DAY < LISTING_DAYS + GRACE_DAYS,
+    );
+    if (alive.length !== stored.length) writeMine(alive);
+    setMine(alive);
+  }, []);
+
+  const isExpired = useCallback(
+    (listing: Listing) => listing.status !== "sold" && ageOf(listing) >= LISTING_DAYS,
+    [ageOf],
+  );
+
+  const graceLeft = useCallback(
+    (listing: Listing) => Math.max(0, LISTING_DAYS + GRACE_DAYS - ageOf(listing)),
+    [ageOf],
+  );
+
   const all = useMemo(
-    () => [...mine, ...SAMPLE_LISTINGS].filter((listing) => ageOf(listing) < LISTING_DAYS),
+    () =>
+      [...mine, ...SAMPLE_LISTINGS].filter((listing) => {
+        if (listing.status === "sold") return true;
+        const age = ageOf(listing);
+        if (age < LISTING_DAYS) return true;
+        return Boolean(listing.mine) && age < LISTING_DAYS + GRACE_DAYS;
+      }),
     [mine, ageOf],
   );
 
   const visible = useMemo(() => {
     const term = query.trim().toLowerCase();
     const filtered = all.filter((listing) => {
+      if (seller && listing.seller !== seller) return false;
       if (category !== "all" && listing.category !== category) return false;
       if (!term) return true;
       return [listing.title, listing.description, listing.location]
@@ -68,34 +95,58 @@ export function useMarketStore(): MarketStore {
         .includes(term);
     });
     return [...filtered].sort((a, b) => {
+      const soldA = a.status === "sold" ? 1 : 0;
+      const soldB = b.status === "sold" ? 1 : 0;
+      if (soldA !== soldB) return soldA - soldB;
       if (sort === "priceLow") return a.price - b.price;
       if (sort === "priceHigh") return b.price - a.price;
       return ageOf(a) - ageOf(b);
     });
-  }, [all, query, category, sort, ageOf]);
+  }, [all, query, category, sort, seller, ageOf]);
 
   const find = useCallback((id: string) => all.find((listing) => listing.id === id), [all]);
 
-  const add = useCallback(
-    (draft: ListingDraft) => {
-      const createdAt = Date.now();
-      const listing: Listing = {
-        ...draft,
-        id: `mine-${createdAt}`,
-        seller: "you",
-        createdAt,
-        mine: true,
-      };
-      setMine((current) => {
-        const next = [listing, ...current];
-        writeMine(next);
-        return next;
-      });
-      setNow(createdAt);
-      setView({ name: "detail", id: listing.id });
-    },
-    [],
+  const countBySeller = useCallback(
+    (name: string) => all.filter((listing) => listing.seller === name).length,
+    [all],
   );
+
+  const setSeller = useCallback((name: string | null) => {
+    setSellerState(name);
+    if (name) {
+      setQuery("");
+      setCategory("all");
+      setView({ name: "browse" });
+    }
+  }, []);
+
+  const add = useCallback((draft: ListingDraft) => {
+    const createdAt = Date.now();
+    const listing: Listing = {
+      ...draft,
+      id: `mine-${createdAt}`,
+      seller: "you",
+      createdAt,
+      mine: true,
+    };
+    setMine((current) => {
+      const next = [listing, ...current];
+      writeMine(next);
+      return next;
+    });
+    setNow(createdAt);
+    setView({ name: "detail", id: listing.id });
+  }, []);
+
+  const republish = useCallback((id: string) => {
+    const createdAt = Date.now();
+    setMine((current) => {
+      const next = current.map((listing) => (listing.id === id ? { ...listing, createdAt } : listing));
+      writeMine(next);
+      return next;
+    });
+    setNow(createdAt);
+  }, []);
 
   const remove = useCallback((id: string) => {
     setMine((current) => {
@@ -116,10 +167,16 @@ export function useMarketStore(): MarketStore {
     setCategory,
     sort,
     setSort,
+    seller,
+    setSeller,
+    countBySeller,
     visible,
     find,
     ageOf,
+    isExpired,
+    graceLeft,
     add,
+    republish,
     remove,
   };
 }

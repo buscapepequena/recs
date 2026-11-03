@@ -1,19 +1,24 @@
-import { MARKET_COLORS, STARBURST } from "@/hooks/marketTheme";
+import Image from "next/image";
+import { MARKET_IMAGES } from "@/hooks/marketTheme";
 import { PriceBurstProps } from "@/types/market.types";
 
 export default function PriceBurst({ label, className = "" }: PriceBurstProps) {
   return (
     <div
-      className={`flex items-center justify-center aspect-square -rotate-[8deg] ${className}`}
-      style={{ filter: "drop-shadow(0.15em 0.15em 0 rgba(21,10,54,0.85))" }}
+      className={`flex items-center justify-center aspect-[3/2] -rotate-[4deg] pointer-events-none ${className}`}
     >
-      <div
-        className="flex absolute inset-0"
-        style={{ backgroundColor: MARKET_COLORS.yellow, clipPath: STARBURST }}
+      <Image
+        src={MARKET_IMAGES.priceBox}
+        alt=""
+        fill
+        unoptimized
+        sizes="160px"
+        draggable={false}
+        className="object-contain select-none"
       />
       <span
-        className="flex relative px-[0.9em] text-center leading-[0.95] font-industria"
-        style={{ color: MARKET_COLORS.purple }}
+        className="flex relative px-[1.1em] text-center leading-[0.95] font-industria"
+        style={{ color: "#141414" }}
       >
         {label}
       </span>

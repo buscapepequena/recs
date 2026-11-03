@@ -35,12 +35,19 @@ export interface GpuSectionProps {
 }
 
 export interface ComputerLayer {
+  key: string;
   src: string;
   left: number;
   top: number;
   width: number;
   ratio: number;
   depth: number;
+  rotate?: number;
+  interactive?: boolean;
+}
+
+export interface DeskPartProps {
+  src: string;
 }
 
 export interface ComputerParallaxProps {

@@ -1,5 +1,11 @@
 import type { ComputerLayer, HeadlineLine } from "@/types/parallax.types";
-import type { MarketCategory, MarketCondition, MarketSort } from "@/types/market.types";
+import type {
+  MarketCategory,
+  MarketCondition,
+  MarketSort,
+  PaymentMethod,
+  SaleMethod,
+} from "@/types/market.types";
 
 export type Locale = "en" | "es" | "pt-br" | "it" | "tw";
 
@@ -71,6 +77,7 @@ export interface MarketDictionary {
   daysLeft: string;
   lastDay: string;
   isNew: string;
+  status: { pending: string; sold: string };
   newListing: string;
   back: string;
   details: {
@@ -80,7 +87,23 @@ export interface MarketDictionary {
     posted: string;
     expires: string;
     seller: string;
+    make: string;
+    model: string;
+    size: string;
+    payment: string;
   };
+  obo: string;
+  options: { crypto: string; delivery: string };
+  payments: Record<PaymentMethod, string>;
+  saleMethods: Record<SaleMethod, string>;
+  soldFor: string;
+  expired: string;
+  republish: string;
+  republishWithin: string;
+  republishToday: string;
+  moreBySeller: string;
+  adsBy: string;
+  showAll: string;
   today: string;
   postedAgo: string;
   conditions: Record<MarketCondition, string>;

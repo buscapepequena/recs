@@ -6,7 +6,7 @@ import MarketApp from "@/modules/market/MarketApp";
 import MarkText from "@/modules/market/MarkText";
 import { useMarketStore } from "@/hooks/useMarketStore";
 import { useSitioSelection } from "@/hooks/sitioSelection";
-import { MARKET_COLORS, SCANLINES, SILVER_SCREEN } from "@/hooks/marketTheme";
+import { MARKET_COLORS, SILVER_SCREEN } from "@/hooks/marketTheme";
 import { MarketScreenProps, MarketTab } from "@/types/market.types";
 
 export default function MarketScreen({ text, htmlLang }: MarketScreenProps) {
@@ -69,11 +69,6 @@ export default function MarketScreen({ text, htmlLang }: MarketScreenProps) {
             {text.tapToOpen}
           </span>
         </button>
-        <div
-          aria-hidden
-          className="flex absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: SCANLINES }}
-        />
       </div>
 
       {open &&
@@ -98,11 +93,6 @@ export default function MarketScreen({ text, htmlLang }: MarketScreenProps) {
               }}
             >
               {app("modal")}
-              <div
-                aria-hidden
-                className="flex absolute inset-0 pointer-events-none"
-                style={{ backgroundImage: SCANLINES }}
-              />
             </div>
           </div>,
           document.body,
