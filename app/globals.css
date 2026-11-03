@@ -40,6 +40,32 @@
   }
 }
 
+@keyframes kitten-blink {
+  0%,
+  92%,
+  97.5%,
+  100% {
+    opacity: 0;
+  }
+  93%,
+  96.5% {
+    opacity: 1;
+  }
+}
+
+.kitten-lid {
+  opacity: 0;
+  animation-name: kitten-blink;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kitten-lid {
+    animation: none;
+  }
+}
+
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;

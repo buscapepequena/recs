@@ -2,6 +2,8 @@ import { ComputerLayer } from "@/types/parallax.types";
 
 export const COMPUTER_RATIO = 1 / 0.72;
 
+export const MONITOR_SIZE = { width: 1536, height: 1024 };
+
 export const COMPUTER_SCREEN = {
   left: 12,
   top: 16.6,

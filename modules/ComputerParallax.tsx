@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useMemo } from "react";
 import DeskPart from "@/modules/DeskPart";
-import { COMPUTER_RATIO, COMPUTER_SCREEN } from "@/hooks/computerLayers";
+import KittenBlink from "@/modules/KittenBlink";
+import { COMPUTER_RATIO, COMPUTER_SCREEN, MONITOR_SIZE } from "@/hooks/computerLayers";
 import { useScrollLayers } from "@/hooks/useScrollLayers";
 import { ComputerParallaxProps } from "@/types/parallax.types";
 
@@ -47,6 +48,7 @@ export default function ComputerParallax({ layers, alt, screen }: ComputerParall
                 className="object-contain select-none"
               />
             )}
+            {i === 0 && <KittenBlink width={MONITOR_SIZE.width} height={MONITOR_SIZE.height} />}
             {i === 0 && screen && (
               <div
                 className="flex absolute overflow-hidden pointer-events-auto"

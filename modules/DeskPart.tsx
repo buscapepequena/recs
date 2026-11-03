@@ -4,7 +4,7 @@ import Image from "next/image";
 import { PointerEvent, useRef } from "react";
 import { DeskPartProps } from "@/types/parallax.types";
 
-const SPRING = "transform 650ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+const SPRING = "transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1)";
 const MAX_TILT = 14;
 
 export default function DeskPart({ src }: DeskPartProps) {

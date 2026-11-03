@@ -46,6 +46,18 @@ export interface ComputerLayer {
   interactive?: boolean;
 }
 
+export interface KittenFace {
+  key: string;
+  eyes: [number, number][];
+  duration: number;
+  delay: number;
+}
+
+export interface KittenBlinkProps {
+  width: number;
+  height: number;
+}
+
 export interface DeskPartProps {
   src: string;
 }
