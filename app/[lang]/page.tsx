@@ -7,7 +7,7 @@ import PrivacyMark from "@/modules/PrivacyMark";
 import { LAYERS, POSTER_TOP } from "@/hooks/parallaxLayers";
 import { versionSrc, withImageVersions } from "@/hooks/imageVersions";
 import { getDictionary } from "@/hooks/i18n";
-import { hasLocale } from "@/hooks/locales";
+import { hasLocale, localeInfo } from "@/hooks/locales";
 
 const POSTER_ID = "rtx-poster";
 
@@ -27,7 +27,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       style={{ backgroundColor: POSTER_TOP }}
     >
       <CityParallax layers={layers} />
-      <MiddleSection text={dict.sitio} issue={dict.issue} />
+      <MiddleSection
+        text={dict.sitio}
+        issue={dict.issue}
+        market={dict.market}
+        htmlLang={localeInfo(lang).htmlLang}
+      />
       <GpuSection id={POSTER_ID} src={versionSrc("/images/rtx6000.png")} alt={dict.poster} />
       <PrivacyMark src={versionSrc("/images/privacy.png")} alt={dict.privacy} targetId={POSTER_ID} />
       <CornerMark

@@ -2,18 +2,17 @@
 
 import Image from "next/image";
 import { useMemo } from "react";
-import { COMPUTER_RATIO } from "@/hooks/computerLayers";
+import { COMPUTER_RATIO, COMPUTER_SCREEN } from "@/hooks/computerLayers";
 import { useScrollLayers } from "@/hooks/useScrollLayers";
 import { ComputerParallaxProps } from "@/types/parallax.types";
 
-export default function ComputerParallax({ layers, alt }: ComputerParallaxProps) {
+export default function ComputerParallax({ layers, alt, screen }: ComputerParallaxProps) {
   const depths = useMemo(() => layers.map((layer) => layer.depth), [layers]);
   const { boxRef, layerRefs } = useScrollLayers(depths);
 
   return (
     <div
       ref={boxRef}
-      role="img"
       aria-label={alt}
       className="flex relative w-full"
       style={{ aspectRatio: COMPUTER_RATIO }}
@@ -41,6 +40,20 @@ export default function ComputerParallax({ layers, alt }: ComputerParallaxProps)
             draggable={false}
             className="object-contain select-none"
           />
+          {i === 0 && screen && (
+            <div
+              className="flex absolute overflow-hidden pointer-events-auto"
+              style={{
+                left: `${COMPUTER_SCREEN.left}%`,
+                top: `${COMPUTER_SCREEN.top}%`,
+                width: `${COMPUTER_SCREEN.width}%`,
+                height: `${COMPUTER_SCREEN.height}%`,
+                borderRadius: COMPUTER_SCREEN.radius,
+              }}
+            >
+              {screen}
+            </div>
+          )}
         </div>
       ))}
     </div>

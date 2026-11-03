@@ -1,4 +1,5 @@
 import { LOOSE, TIGHT, bold, light, line, mark, medium } from "@/hooks/sitioHeadlines";
+import market from "@/hooks/dictionaries/market/tw";
 import { Dictionary } from "@/types/i18n.types";
 
 const tw: Dictionary = {
@@ -62,6 +63,7 @@ const tw: Dictionary = {
   poster: "Recomputational swaps. Recomprable swaps. Recompetitive swaps. RTX 6000",
   privacy: "Obiara nni hɔ a ɔdwene kokoamsɛm ho bio. Yɛ no wo ankasa kɔmputa so.",
   cornerMark: "Buscape Pequena wɔ GitHub so",
+  market,
 };
 
 export default tw;

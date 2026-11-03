@@ -1,4 +1,5 @@
 import type { ComputerLayer, HeadlineLine } from "@/types/parallax.types";
+import type { MarketCategory, MarketCondition, MarketSort } from "@/types/market.types";
 
 export type Locale = "en" | "es" | "pt-br" | "it" | "tw";
 
@@ -42,6 +43,84 @@ export interface Dictionary {
   poster: string;
   privacy: string;
   cornerMark: string;
+  market: MarketDictionary;
+}
+
+export interface MarketSoonText {
+  title: string;
+  body: string;
+  points: string[];
+}
+
+export interface MarketDictionary {
+  tabs: { mod: string; installation: string; market: string };
+  soon: { badge: string; mod: MarketSoonText; installation: MarketSoonText };
+  titleLead: string;
+  titleMark: string;
+  burst: string;
+  tagline: string;
+  searchLabel: string;
+  searchPlaceholder: string;
+  allCategories: string;
+  categories: Record<MarketCategory, string>;
+  sortLabel: string;
+  sort: Record<MarketSort, string>;
+  results: string;
+  resultsOne: string;
+  noResults: string;
+  daysLeft: string;
+  lastDay: string;
+  isNew: string;
+  newListing: string;
+  back: string;
+  details: {
+    condition: string;
+    category: string;
+    location: string;
+    posted: string;
+    expires: string;
+    seller: string;
+  };
+  today: string;
+  postedAgo: string;
+  conditions: Record<MarketCondition, string>;
+  messageSeller: string;
+  messagesSoon: string;
+  you: string;
+  yourListing: string;
+  delete: string;
+  deleteConfirm: string;
+  photoOf: string;
+  form: {
+    headingLead: string;
+    headingMark: string;
+    headingTail: string;
+    title: string;
+    titlePlaceholder: string;
+    price: string;
+    currency: string;
+    category: string;
+    condition: string;
+    location: string;
+    locationPlaceholder: string;
+    description: string;
+    descriptionPlaceholder: string;
+    photos: string;
+    addPhotos: string;
+    photosHint: string;
+    cover: string;
+    removePhoto: string;
+    processing: string;
+    lasts: string;
+    publish: string;
+    cancel: string;
+    required: string;
+    invalidPrice: string;
+    needPhoto: string;
+  };
+  open: string;
+  close: string;
+  tapToOpen: string;
 }
 
 export interface LanguageSwitcherProps {
@@ -53,4 +132,6 @@ export interface IssueSectionProps {
   date: string;
   computerLayers: ComputerLayer[];
   computerAlt: string;
+  market: MarketDictionary;
+  htmlLang: string;
 }

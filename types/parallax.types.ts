@@ -1,4 +1,4 @@
-import type { CSSProperties, RefObject } from "react";
+import type { CSSProperties, ReactNode, RefObject } from "react";
 import type { Dictionary, LayerKey, Locale, SitioImageKey } from "@/types/i18n.types";
 
 export interface ParallaxDrift {
@@ -46,6 +46,7 @@ export interface ComputerLayer {
 export interface ComputerParallaxProps {
   layers: ComputerLayer[];
   alt: string;
+  screen?: ReactNode;
 }
 
 export interface PrivacyMarkProps {
@@ -103,6 +104,19 @@ export interface SitioBlockProps {
 export interface MiddleSectionProps {
   text: Dictionary["sitio"];
   issue: Dictionary["issue"];
+  market: Dictionary["market"];
+  htmlLang: string;
+}
+
+export interface SitioSelectionValue {
+  active: number;
+  manual: number | null;
+  select: (option: number) => void;
+}
+
+export interface SitioSelectionProviderProps {
+  total: number;
+  children: ReactNode;
 }
 
 export interface CityParallaxProps {

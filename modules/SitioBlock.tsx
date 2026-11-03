@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { KeyboardEvent, useEffect, useState } from "react";
+import { KeyboardEvent } from "react";
+import { useSitioSelection } from "@/hooks/sitioSelection";
 import SitioHeadline from "@/modules/SitioHeadline";
 import GpuNote from "@/modules/GpuNote";
 import { SITIO_COPY, SITIO_COPY_BOX, SITIO_RATIO, SITIO_SHIFT } from "@/hooks/sitioImages";
@@ -9,7 +10,6 @@ import { BASE_SIZE } from "@/hooks/sitioHeadlines";
 import { useFitText } from "@/hooks/useFitText";
 import { SitioBlockProps } from "@/types/parallax.types";
 
-const AUTO_MS = 10000;
 const ACCENT = "#E9672B";
 const COPY_FONT = "var(--font-helvetica-face)";
 const GPU_SIZE = 2.55;
@@ -18,23 +18,8 @@ const GPU_CENTER = 93.49;
 const GPU_WIDTH = 13.02;
 
 export default function SitioBlock({ images, text }: SitioBlockProps) {
-  const [active, setActive] = useState(0);
-  const [auto, setAuto] = useState(true);
-  const total = text.headlines.length;
+  const { active, select } = useSitioSelection();
   const copyRefs = useFitText(SITIO_COPY.length, text.copy.join("|"));
-
-  useEffect(() => {
-    if (!auto) return;
-    const timer = setInterval(() => {
-      setActive((current) => (current + 1) % total);
-    }, AUTO_MS);
-    return () => clearInterval(timer);
-  }, [auto, total]);
-
-  const select = (option: number) => {
-    setAuto(false);
-    setActive(option);
-  };
 
   const onKey = (option: number) => (event: KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
